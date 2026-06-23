@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-cinzel: 'Cinzel', serif;
+  --font-cinzel-decorative: 'Cinzel Decorative', serif;
+  --font-fell: 'IM Fell English', serif;
+
+  --color-parchment: #e8d5b0;
+  --color-parchment-dark: #c9a96e;
+  --color-gold: #c9a227;
+  --color-gold-light: #f0c040;
+  --color-crimson: #8b0000;
+  --color-crimson-light: #c0392b;
+  --color-ink: #0d0a07;
+  --color-ink-light: #1a1208;
+  --color-stone: #2a1f0f;
+  --color-stone-light: #3d2e18;
+  --color-mist: #6b5a3e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0d0a07;
+  color: #e8d5b0;
+  font-family: 'IM Fell English', serif;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cinzel', serif;
+}
+
+/* Decorative divider */
+.rune-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+.rune-divider::before,
+.rune-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #c9a227, transparent);
+}
+
+/* Parchment card */
+.parchment-card {
+  background: linear-gradient(135deg, #1a1208 0%, #231a0e 50%, #1a1208 100%);
+  border: 1px solid #3d2e18;
+  border-radius: 4px;
+  position: relative;
+}
+.parchment-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 2px,
+    rgba(201, 162, 39, 0.015) 2px,
+    rgba(201, 162, 39, 0.015) 4px
+  );
+  pointer-events: none;
+}
+
+/* Corner ornaments */
+.corner-ornament {
+  position: relative;
+}
+.corner-ornament::before,
+.corner-ornament::after {
+  content: '✦';
+  position: absolute;
+  color: #c9a227;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+.corner-ornament::before { top: 0.5rem; left: 0.5rem; }
+.corner-ornament::after { bottom: 0.5rem; right: 0.5rem; }
+
+/* Glowing text */
+.text-glow-gold {
+  text-shadow: 0 0 20px rgba(201, 162, 39, 0.4), 0 0 40px rgba(201, 162, 39, 0.2);
+}
+.text-glow-red {
+  text-shadow: 0 0 20px rgba(139, 0, 0, 0.5), 0 0 40px rgba(139, 0, 0, 0.3);
+}
+
+/* Scroll animation */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+.torch-flicker {
+  animation: flicker 3s ease-in-out infinite;
+}
+
+/* Nav active state */
+.nav-link {
+  position: relative;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: #c9a96e;
+  transition: color 0.2s;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #c9a227;
+  transition: width 0.3s;
+}
+.nav-link:hover { color: #c9a227; }
+.nav-link:hover::after { width: 100%; }
+.nav-link.active { color: #c9a227; }
+.nav-link.active::after { width: 100%; }
+
+/* Quote styling */
+blockquote.dnd-quote {
+  border-left: 3px solid #8b0000;
+  background: linear-gradient(to right, rgba(139,0,0,0.08), transparent);
+  padding: 1rem 1.5rem;
+  font-style: italic;
+  font-family: 'IM Fell English', serif;
+  font-size: 1.15rem;
+}
+
+/* Class badge colors */
+.badge-fighter    { background: rgba(180,0,0,0.2);   border-color: #8b0000;  color: #ff6b6b; }
+.badge-wizard     { background: rgba(75,0,130,0.2);  border-color: #6a0dad;  color: #c084fc; }
+.badge-rogue      { background: rgba(0,50,30,0.2);   border-color: #1a5c3a;  color: #6ee7b7; }
+.badge-cleric     { background: rgba(180,130,0,0.2); border-color: #b8860b;  color: #fde68a; }
+.badge-ranger     { background: rgba(20,60,20,0.2);  border-color: #2d5a27;  color: #86efac; }
+.badge-paladin    { background: rgba(200,150,50,0.2);border-color: #d4a017;  color: #fef3c7; }
+.badge-bard       { background: rgba(150,0,100,0.2); border-color: #9c0079;  color: #f0abfc; }
+.badge-barbarian  { background: rgba(150,30,0,0.2);  border-color: #991b1b;  color: #fca5a5; }
+.badge-druid      { background: rgba(50,80,0,0.2);   border-color: #4a7c00;  color: #bef264; }
+.badge-sorcerer   { background: rgba(100,0,150,0.2); border-color: #7c00b8;  color: #d8b4fe; }
+.badge-warlock    { background: rgba(60,0,100,0.2);  border-color: #4c0070;  color: #a78bfa; }
+.badge-monk       { background: rgba(100,70,0,0.2);  border-color: #7c5600;  color: #fcd34d; }
+
+/* Timeline */
+.timeline-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, #c9a227, transparent);
+  transform: translateX(-50%);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0d0a07; }
+::-webkit-scrollbar-thumb { background: #3d2e18; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #c9a227; }

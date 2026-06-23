@@ -1,0 +1,139 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { storyUpdates } from '../data/story';
+---
+
+<Layout title="Story Updates" description="Session-by-session chronicles of the Motley Marauders' adventures.">
+
+  <!-- Page header -->
+  <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18;">
+    <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:1rem;">The Campaign Chronicle</p>
+    <h1 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:clamp(2rem,5vw,3.5rem); font-weight:700;" class="text-glow-gold">
+      Story Updates
+    </h1>
+    <div class="rune-divider" style="max-width:16rem; margin:1.5rem auto 0;"></div>
+    <p style="color:#c9a96e; font-style:italic; margin-top:1rem; max-width:40rem; margin-left:auto; margin-right:auto;">
+      A faithful (if occasionally embellished) account of events, as witnessed by those who somehow survived them.
+    </p>
+  </div>
+
+  <!-- Session list -->
+  <div style="max-width:56rem; margin:0 auto; padding:4rem 1rem;">
+
+    <!-- Session count -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
+      <p style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">
+        {storyUpdates.length} Sessions Chronicled
+      </p>
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+        {storyUpdates.map(s => (
+          <a href={`#session-${s.session}`} style="
+            font-family:'Cinzel',serif;
+            font-size:0.7rem;
+            padding:0.2rem 0.5rem;
+            border:1px solid #3d2e18;
+            color:#c9a96e;
+            text-decoration:none;
+            transition:border-color 0.2s;
+          ">
+            #{s.session}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    {storyUpdates.map((session, i) => (
+      <article
+        id={`session-${session.session}`}
+        class="parchment-card"
+        style="margin-bottom:2.5rem; padding:0; overflow:hidden;"
+      >
+        <!-- Session header bar -->
+        <div style="
+          padding:1rem 1.5rem;
+          background:linear-gradient(to right, rgba(139,0,0,0.15), transparent);
+          border-bottom:1px solid #3d2e18;
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          flex-wrap:wrap;
+          gap:0.75rem;
+        ">
+          <div style="display:flex; align-items:center; gap:1rem;">
+            <span style="
+              font-family:'Cinzel',serif;
+              font-size:2rem;
+              font-weight:900;
+              color:#8b0000;
+              line-height:1;
+              opacity:0.6;
+            ">
+              {String(session.session).padStart(2, '0')}
+            </span>
+            <div>
+              <h2 style="font-family:'Cinzel',serif; color:#f0c040; font-size:1.15rem; font-weight:700; margin-bottom:0.2rem;">
+                {session.title}
+              </h2>
+              <p style="font-size:0.8rem; color:#c9a227; font-family:'Cinzel',serif;">📍 {session.location}</p>
+            </div>
+          </div>
+          {session.date && (
+            <span style="font-size:0.75rem; color:#6b5a3e; font-family:'Cinzel',serif;">{session.date}</span>
+          )}
+        </div>
+
+        <!-- Session body -->
+        <div style="padding:1.5rem;">
+          <!-- Summary -->
+          <p style="color:#c9a96e; line-height:1.8; margin-bottom:1.25rem;">{session.summary}</p>
+
+          <!-- Highlights -->
+          <div style="margin-bottom:1.25rem;">
+            <h3 style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:0.75rem;">
+              ✦ Session Highlights
+            </h3>
+            <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.4rem;">
+              {session.highlights.map(h => (
+                <li style="display:flex; gap:0.75rem; align-items:flex-start; font-size:0.875rem; color:#c9a96e;">
+                  <span style="color:#c9a227; flex-shrink:0;">›</span>
+                  {h}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Cliffhanger -->
+          {session.cliffhanger && (
+            <div style="
+              border-left:3px solid #8b0000;
+              background:linear-gradient(to right, rgba(139,0,0,0.06), transparent);
+              padding:0.75rem 1rem;
+            ">
+              <span style="
+                font-family:'Cinzel',serif;
+                font-size:0.7rem;
+                letter-spacing:0.1em;
+                text-transform:uppercase;
+                color:#8b0000;
+                display:block;
+                margin-bottom:0.25rem;
+              ">⚠ To Be Continued...</span>
+              <p style="font-style:italic; color:#ff9999; font-size:0.9rem;">"{session.cliffhanger}"</p>
+            </div>
+          )}
+        </div>
+      </article>
+    ))}
+
+    <!-- Coming soon -->
+    <div class="parchment-card" style="padding:2rem; text-align:center; border-style:dashed;">
+      <p style="font-size:2rem; margin-bottom:1rem; opacity:0.4;">📜</p>
+      <h3 style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:1rem; margin-bottom:0.5rem;">The Story Continues...</h3>
+      <p style="color:#3d2e18; font-size:0.875rem; font-style:italic;">
+        Session {storyUpdates.length + 1} is yet to be written. The dice await.
+      </p>
+    </div>
+
+  </div>
+
+</Layout>

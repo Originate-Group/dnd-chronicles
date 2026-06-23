@@ -1,0 +1,378 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { journeyMilestones, storyUpdates } from '../data/story';
+
+// ── Path + footprint generation ────────────────────────────
+const REF_W   = 1200;   // reference page width for % conversion
+const STEP_Y  = 90;     // px between each step-pair
+const N_STEPS = 42;     // steps down the page
+const START_Y = 280;    // px from top to first step
+
+// Single winding main path (x in ref px)
+function cx(step: number): number {
+  return REF_W * 0.5
+    + 190 * Math.sin(0.36 * step + 0.4)
+    +  70 * Math.sin(0.82 * step + 1.5);
+}
+// Path angle at each step (degrees from straight down)
+function pathAngle(step: number): number {
+  const dx = cx(step + 0.5) - cx(step - 0.5);
+  return Math.atan2(dx, STEP_Y) * (180 / Math.PI);
+}
+// Perpendicular offset: shift a point laterally by `dist` px relative to path direction
+function perp(step: number, dist: number): { dx: number; dy: number } {
+  const a = pathAngle(step) * (Math.PI / 180);
+  return { dx: Math.cos(a) * dist, dy: -Math.sin(a) * dist };
+}
+
+// 9 character lanes: lateral offset from path centreline (px)
+// negative = left of travel, positive = right
+const lanes = [
+  { type: 'minotaur', laneOffset: -68, footSpread: 14, scale: 1.0  },
+  { type: 'goliath',  laneOffset: -44, footSpread: 17, scale: 0.90 },
+  { type: 'human',    laneOffset: -22, footSpread: 12, scale: 0.75 },
+  { type: 'goblin',   laneOffset:  -5, footSpread:  8, scale: 0.60 },
+  { type: 'fairy',    laneOffset:   3, footSpread:  4, scale: 0.38 },
+  { type: 'elf',      laneOffset:  18, footSpread: 10, scale: 0.60 },
+  { type: 'lizard',   laneOffset:  38, footSpread: 13, scale: 0.75 },
+  { type: 'shadar',   laneOffset:  58, footSpread: 12, scale: 0.75 },
+  { type: 'centaur',  laneOffset:  82, footSpread:  0, scale: 1.0  },
+];
+
+interface Print {
+  x: number;   // % of REF_W → used as left%
+  y: number;   // absolute px from page top
+  angle: number;
+  isLeft: boolean;
+  type: string;
+  scale: number;
+  stepIdx: number;
+}
+
+const prints: Print[] = [];
+
+for (let s = 0; s < N_STEPS; s++) {
+  const mainX   = cx(s);
+  const y       = START_Y + s * STEP_Y;
+  const angle   = pathAngle(s);
+  const isLeft  = s % 2 === 0;
+
+  for (const lane of lanes) {
+    const { dx: ldx, dy: ldy } = perp(s, lane.laneOffset);
+    const laneX = mainX + ldx;
+
+    if (lane.type === 'centaur') {
+      prints.push({
+        x: (laneX + ldx * 0) / REF_W * 100,
+        y: y + ldy,
+        angle, isLeft: false,
+        type: 'centaur',
+        scale: lane.scale,
+        stepIdx: s,
+      });
+    } else {
+      const { dx: sdx, dy: sdy } = perp(s, isLeft ? -lane.footSpread : lane.footSpread);
+      prints.push({
+        x: (laneX + sdx) / REF_W * 100,
+        y: y + sdy + ldy,
+        angle, isLeft,
+        type: lane.type,
+        scale: lane.scale,
+        stepIdx: s,
+      });
+    }
+  }
+}
+---
+
+<Layout title="The Journey" description="A timeline of the Motley Marauders' journey across the realm.">
+<div style="position:relative;">
+
+  <!-- Footprint background -->
+  <div class="fp-layer" aria-hidden="true">
+    {prints.map((p, i) => {
+      const flip = p.isLeft ? 'scale(-1,1)' : 'scale(1,1)';
+      const sz: Record<string,{w:number;h:number}> = {
+        minotaur: {w:22,h:18},
+        goliath:  {w:24,h:32},
+        human:    {w:18,h:28},
+        goblin:   {w:16,h:20},
+        fairy:    {w: 9,h:13},
+        elf:      {w:13,h:24},
+        lizard:   {w:28,h:22},
+        shadar:   {w:16,h:26},
+        centaur:  {w:52,h:24},
+      };
+      const d = sz[p.type] ?? {w:18,h:28};
+      const w = d.w * p.scale;
+      const h = d.h * p.scale;
+      return (
+        <div
+          class="fp"
+          data-step={p.stepIdx}
+          style={`left:${p.x.toFixed(2)}%;top:${p.y.toFixed(0)}px;width:${w.toFixed(1)}px;height:${h.toFixed(1)}px;transform:rotate(${p.angle}deg);`}
+        >
+          <svg
+            viewBox={`0 0 ${d.w} ${d.h}`}
+            width={w}
+            height={h}
+            fill="#c9973a"
+            stroke="#c9973a"
+            stroke-width="0.8"
+            overflow="visible"
+            style={`transform:${flip};`}
+          >
+            {p.type === 'minotaur' && (
+              <>
+                <ellipse cx="6.5"  cy="11" rx="5.5" ry="9"/>
+                <ellipse cx="15.5" cy="11" rx="5.5" ry="9"/>
+                <ellipse cx="6.5"  cy="3"  rx="2"   ry="1.2"/>
+                <ellipse cx="15.5" cy="3"  rx="2"   ry="1.2"/>
+              </>
+            )}
+            {p.type === 'centaur' && (
+              <>
+                <ellipse cx="13" cy="12" rx="7" ry="9"  transform="rotate(-10 13 12)"/>
+                <ellipse cx="39" cy="12" rx="7" ry="9"  transform="rotate( 10 39 12)"/>
+                <ellipse cx="16" cy="12" rx="6" ry="7.5" transform="rotate(-8 16 12)" opacity="0.5"/>
+                <ellipse cx="36" cy="12" rx="6" ry="7.5" transform="rotate( 8 36 12)" opacity="0.5"/>
+              </>
+            )}
+            {p.type === 'goblin' && (
+              <>
+                <ellipse cx="8" cy="13" rx="7" ry="6"/>
+                <ellipse cx="3"  cy="7"  rx="2.5" ry="3.5"/>
+                <ellipse cx="7"  cy="5"  rx="2.5" ry="4"/>
+                <ellipse cx="11" cy="5"  rx="2.5" ry="4"/>
+                <ellipse cx="14" cy="7"  rx="2"   ry="3"/>
+                <line x1="3"  y1="3.5"  x2="2.5" y2="1"   stroke-linecap="round"/>
+                <line x1="7"  y1="1"    x2="7"   y2="-1.5" stroke-linecap="round"/>
+                <line x1="11" y1="1"    x2="11"  y2="-1.5" stroke-linecap="round"/>
+                <line x1="14" y1="4"    x2="15"  y2="1.5" stroke-linecap="round"/>
+              </>
+            )}
+            {p.type === 'goliath' && (
+              <>
+                <ellipse cx="12" cy="26" rx="10" ry="6"/>
+                <rect    x="3"  cy="10" width="18" height="18" rx="4" y="10"/>
+                <ellipse cx="11" cy="8"  rx="11"  ry="8"/>
+                <circle  cx="2"  cy="1"  r="3"/>
+                <circle  cx="7"  cy="-2" r="3.5"/>
+                <circle  cx="12" cy="-3" r="3.5"/>
+                <circle  cx="17" cy="-1" r="3"/>
+                <circle  cx="21" cy="3"  r="2.5"/>
+              </>
+            )}
+            {p.type === 'lizard' && (
+              <>
+                <ellipse cx="14" cy="16" rx="8" ry="6"/>
+                <ellipse cx="3"  cy="9"  rx="3" ry="7.5" transform="rotate(-35 3 9)"/>
+                <ellipse cx="9"  cy="4"  rx="2.5" ry="7" transform="rotate(-12 9 4)"/>
+                <ellipse cx="16" cy="3"  rx="2.5" ry="7" transform="rotate( 12 16 3)"/>
+                <ellipse cx="23" cy="7"  rx="3" ry="7.5" transform="rotate( 35 23 7)"/>
+                <line x1="0"  y1="5"  x2="-2" y2="3"  stroke-linecap="round"/>
+                <line x1="8"  y1="-3" x2="8"  y2="-5" stroke-linecap="round"/>
+                <line x1="16" y1="-4" x2="16" y2="-6" stroke-linecap="round"/>
+                <line x1="26" y1="3"  x2="28" y2="1"  stroke-linecap="round"/>
+              </>
+            )}
+            {p.type === 'elf' && (
+              <>
+                <ellipse cx="6.5" cy="20" rx="5"  ry="4"/>
+                <rect    x="2"    y="9"   width="9" height="13" rx="2"/>
+                <ellipse cx="6"   cy="7"  rx="6"  ry="5.5"/>
+                <circle  cx="1"   cy="3"  r="1.5"/>
+                <circle  cx="4"   cy="1"  r="1.8"/>
+                <circle  cx="7.5" cy="0.5" r="1.7"/>
+                <circle  cx="10.5" cy="2" r="1.5"/>
+                <circle  cx="12.5" cy="5" r="1.2"/>
+              </>
+            )}
+            {p.type === 'shadar' && (
+              <>
+                <path d="M2,24 C2,26 6,28 8,28 C10,28 14,26 14,24 L14,6 C14,1 10,-2 8,-2 C6,-2 2,1 2,6 Z"/>
+                <ellipse cx="8" cy="2"  rx="6.5" ry="4.5"/>
+                <ellipse cx="8" cy="22" rx="5.5"  ry="3"/>
+              </>
+            )}
+            {p.type === 'human' && (
+              <>
+                <ellipse cx="9"  cy="23" rx="7.5" ry="5.5"/>
+                <rect    x="2"   y="9"   width="14" height="16" rx="3.5"/>
+                <ellipse cx="8"  cy="7"  rx="8.5" ry="7"/>
+                <circle  cx="1"  cy="1"  r="2.5"/>
+                <circle  cx="5"  cy="-2" r="3"/>
+                <circle  cx="9"  cy="-3" r="2.8"/>
+                <circle  cx="13" cy="-1" r="2.5"/>
+                <circle  cx="16" cy="3"  r="2"/>
+              </>
+            )}
+            {p.type === 'fairy' && (
+              <>
+                <ellipse cx="4.5" cy="10" rx="3.5" ry="3"/>
+                <ellipse cx="4.5" cy="6"  rx="4"   ry="4.5"/>
+                <circle  cx="1.5" cy="2"  r="1.3"/>
+                <circle  cx="4"   cy="0.5" r="1.5"/>
+                <circle  cx="7"   cy="1"  r="1.3"/>
+                <circle  cx="8.5" cy="3.5" r="1.1"/>
+              </>
+            )}
+          </svg>
+        </div>
+      );
+    })}
+  </div>
+
+  <!-- Page content -->
+  <div style="position:relative; z-index:1;">
+
+    <!-- Page header -->
+    <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18;">
+      <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:1rem;">From There to Here</p>
+      <h1 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:clamp(2rem,5vw,3.5rem); font-weight:700;" class="text-glow-gold">
+        The Journey So Far
+      </h1>
+      <div class="rune-divider" style="max-width:16rem; margin:1.5rem auto 0;"></div>
+      <p style="color:#c9a96e; font-style:italic; margin-top:1rem; max-width:40rem; margin-left:auto; margin-right:auto;">
+        Every road walked, every enemy made, every impossible situation narrowly survived — laid out in order of foolishness.
+      </p>
+    </div>
+
+    <!-- Stats bar -->
+    <div style="border-bottom:1px solid #3d2e18; padding:1.5rem 1rem;">
+      <div style="max-width:72rem; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:1rem; text-align:center;">
+        {[
+          { label: 'Sessions Played',   value: storyUpdates.length },
+          { label: 'Locations Visited', value: journeyMilestones.length },
+          { label: 'Enemies Made',      value: '3+' },
+          { label: 'Times Almost Died', value: '∞' },
+          { label: 'Current Level',     value: 7 },
+        ].map(stat => (
+          <div>
+            <div style="font-family:'Cinzel',serif; color:#f0c040; font-size:1.5rem; font-weight:700;">{stat.value}</div>
+            <div style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase;">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div style="max-width:48rem; margin:0 auto; padding:5rem 1rem; position:relative;">
+      {journeyMilestones.map((milestone, i) => (
+        <div style={`display:flex; align-items:flex-start; gap:1.5rem; margin-bottom:3rem; ${i % 2 === 1 ? 'flex-direction:row-reverse;' : ''}`}>
+          <div style="width:3.5rem;height:3.5rem;border-radius:50%;background:linear-gradient(135deg,#231a0e,#1a1208);border:2px solid #3d2e18;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;z-index:1;position:relative;">
+            {milestone.icon}
+          </div>
+          <div class="parchment-card corner-ornament" style="flex:1;padding:1.25rem;">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+              <h2 style="font-family:'Cinzel',serif;color:#f0c040;font-size:1rem;font-weight:700;">{milestone.title}</h2>
+              <span style="font-size:0.7rem;color:#c9a227;font-family:'Cinzel',serif;white-space:nowrap;">📍 {milestone.location}</span>
+            </div>
+            <p style="color:#c9a96e;font-size:0.875rem;line-height:1.7;margin-bottom:0.75rem;">{milestone.description}</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">
+              {milestone.tags.map(tag => (
+                <span style="font-size:0.65rem;padding:0.15rem 0.5rem;border:1px solid #3d2e18;color:#6b5a3e;font-family:'Cinzel',serif;letter-spacing:0.05em;text-transform:uppercase;">{tag}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      ))}
+
+      <!-- What's next -->
+      <div style="display:flex;align-items:flex-start;gap:1.5rem;">
+        <div style="width:3.5rem;height:3.5rem;border-radius:50%;border:2px dashed #3d2e18;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;opacity:0.4;">?</div>
+        <div class="parchment-card" style="flex:1;padding:1.25rem;border-style:dashed;">
+          <h2 style="font-family:'Cinzel',serif;color:#6b5a3e;font-size:1rem;font-weight:700;margin-bottom:0.5rem;">The Next Chapter...</h2>
+          <p style="color:#3d2e18;font-style:italic;font-size:0.875rem;">
+            The Archivist's offer hangs in the air. The Hollow Crown stirs. The Marauders have until the new moon to decide. Whatever comes next — it won't be boring.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map placeholder -->
+    <div style="max-width:72rem;margin:0 auto;padding:0 1rem 5rem;">
+      <div style="border:1px solid #3d2e18;padding:3rem;text-align:center;background:linear-gradient(135deg,#1a1208,#231a0e);position:relative;overflow:hidden;">
+        <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(201,162,39,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,162,39,0.03) 1px,transparent 1px);background-size:32px 32px;"></div>
+        <div style="position:relative;z-index:1;">
+          <p style="font-size:3rem;margin-bottom:1rem;">🗺️</p>
+          <h3 style="font-family:'Cinzel',serif;color:#c9a227;font-size:1.25rem;margin-bottom:0.5rem;">The Realm Map</h3>
+          <p style="color:#6b5a3e;font-style:italic;font-size:0.875rem;">
+            The cartographer is still catching up. Add your map image here — drop a file in <code style="color:#c9a96e;font-size:0.8rem;">public/map.jpg</code> and update this section.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page content -->
+</div><!-- /relative wrapper -->
+
+</Layout>
+
+<style>
+/* Footprint layer */
+.fp-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Each individual footprint */
+.fp {
+  position: absolute;
+  transform-origin: center center;
+  opacity: 0;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  /* start squished */
+  filter: opacity(0);
+}
+
+/* Revealed state — added by JS */
+.fp.stepped {
+  opacity: 1;
+  filter: opacity(1);
+}
+</style>
+
+<script>
+  // Reveal footprints row-by-row as they scroll into view,
+  // staggering within each row so left then right appears
+  const prints = document.querySelectorAll<HTMLElement>('.fp');
+
+  // Group by step index
+  const byStep = new Map<number, HTMLElement[]>();
+  prints.forEach(el => {
+    const s = Number(el.dataset.step ?? 0);
+    if (!byStep.has(s)) byStep.set(s, []);
+    byStep.get(s)!.push(el);
+  });
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target as HTMLElement;
+        const step = Number(el.dataset.step ?? 0);
+        const group = byStep.get(step) ?? [];
+
+        // Stagger prints within the same row
+        group.forEach((print, i) => {
+          setTimeout(() => {
+            print.classList.add('stepped');
+          }, i * 28);
+        });
+
+        // Once revealed, stop watching
+        group.forEach(p => observer.unobserve(p));
+      });
+    },
+    { rootMargin: '0px 0px -8% 0px', threshold: 0.1 }
+  );
+
+  // Only observe the first element of each step group (trigger for the whole row)
+  byStep.forEach((group) => {
+    if (group[0]) observer.observe(group[0]);
+  });
+</script>

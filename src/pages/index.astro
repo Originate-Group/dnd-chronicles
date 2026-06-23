@@ -1,0 +1,358 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { characters } from '../data/characters';
+import { storyUpdates, quotes } from '../data/story';
+
+const latestSession = storyUpdates[storyUpdates.length - 1];
+const featuredQuote = quotes[5]; // "We are the Motley Marauders!"
+---
+
+<Layout title="Home">
+
+  <!-- Hero -->
+  <section class="relative min-h-screen flex flex-col items-center justify-center text-center px-4 py-20 overflow-hidden">
+
+    <!-- Background glow -->
+    <div class="absolute inset-0 pointer-events-none" style="
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(139,0,0,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 30%, rgba(201,162,39,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 50% 100%, rgba(26,18,8,0.9) 0%, transparent 70%);
+    "></div>
+
+    <!-- Decorative rune ring -->
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none" style="opacity: 0.04;">
+      <div style="width:32rem; height:32rem; border:1px solid #c9a227; border-radius:50%;"></div>
+    </div>
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none" style="opacity: 0.04;">
+      <div style="width:24rem; height:24rem; border:1px solid #c9a227; border-radius:50%; transform:rotate(45deg);"></div>
+    </div>
+
+    <!-- Fire + smoke + embers -->
+    <div class="smoke-container" aria-hidden="true">
+
+      <!-- Base fire glow -->
+      <div class="fire-glow"></div>
+
+      <!-- Smoke wisps — warm amber/crimson -->
+      <div class="smoke-wisp" style="--x:48%; --delay:0s;   --dur:7s;  --size:200px; --drift:-35px; --rot:-12deg; --blur:20px; --col-inner:rgba(255,100,20,0.30); --col-mid:rgba(200,50,10,0.18); --col-outer:rgba(80,20,0,0.08);"></div>
+      <div class="smoke-wisp" style="--x:52%; --delay:1.2s; --dur:9s;  --size:260px; --drift:45px;  --rot:18deg;  --blur:26px; --col-inner:rgba(220,80,10,0.25); --col-mid:rgba(160,40,5,0.15);  --col-outer:rgba(60,15,0,0.06);"></div>
+      <div class="smoke-wisp" style="--x:43%; --delay:2.5s; --dur:8s;  --size:170px; --drift:-55px; --rot:-20deg; --blur:18px; --col-inner:rgba(255,120,30,0.28); --col-mid:rgba(190,55,5,0.17);  --col-outer:rgba(70,20,0,0.07);"></div>
+      <div class="smoke-wisp" style="--x:57%; --delay:0.7s; --dur:10s; --size:300px; --drift:25px;  --rot:10deg;  --blur:30px; --col-inner:rgba(200,60,5,0.22);  --col-mid:rgba(140,30,0,0.13);  --col-outer:rgba(50,10,0,0.05);"></div>
+      <div class="smoke-wisp" style="--x:50%; --delay:3.8s; --dur:7.5s;--size:150px; --drift:-18px; --rot:-8deg;  --blur:16px; --col-inner:rgba(255,140,40,0.32); --col-mid:rgba(210,70,10,0.20); --col-outer:rgba(90,25,0,0.09);"></div>
+      <div class="smoke-wisp" style="--x:46%; --delay:5s;   --dur:11s; --size:340px; --drift:65px;  --rot:25deg;  --blur:34px; --col-inner:rgba(180,50,5,0.20);  --col-mid:rgba(120,25,0,0.12);  --col-outer:rgba(45,10,0,0.05);"></div>
+      <div class="smoke-wisp" style="--x:54%; --delay:4.2s; --dur:8.5s;--size:190px; --drift:-42px; --rot:-15deg; --blur:22px; --col-inner:rgba(255,90,15,0.26); --col-mid:rgba(195,45,5,0.16);  --col-outer:rgba(75,18,0,0.07);"></div>
+      <div class="smoke-wisp" style="--x:51%; --delay:6.1s; --dur:9.5s;--size:140px; --drift:30px;  --rot:6deg;   --blur:15px; --col-inner:rgba(255,160,50,0.35); --col-mid:rgba(220,80,15,0.22); --col-outer:rgba(100,30,0,0.10);"></div>
+
+      <!-- Fire embers -->
+      <div class="ember" style="--x:48%;  --delay:0.3s;  --dur:3.2s; --size:3px; --col:#ff6a00; --glow:8px;  --drift:-22px; --rise:-340px;"></div>
+      <div class="ember" style="--x:51%;  --delay:0.9s;  --dur:4.1s; --size:2px; --col:#ffaa00; --glow:6px;  --drift:18px;  --rise:-420px;"></div>
+      <div class="ember" style="--x:49%;  --delay:1.5s;  --dur:3.6s; --size:4px; --col:#ff4400; --glow:10px; --drift:-40px; --rise:-300px;"></div>
+      <div class="ember" style="--x:52%;  --delay:2.0s;  --dur:2.8s; --size:2px; --col:#ffcc00; --glow:7px;  --drift:30px;  --rise:-380px;"></div>
+      <div class="ember" style="--x:47%;  --delay:2.7s;  --dur:4.5s; --size:3px; --col:#ff5500; --glow:9px;  --drift:-15px; --rise:-450px;"></div>
+      <div class="ember" style="--x:53%;  --delay:0.5s;  --dur:3.9s; --size:2px; --col:#ff8800; --glow:6px;  --drift:42px;  --rise:-360px;"></div>
+      <div class="ember" style="--x:50%;  --delay:3.3s;  --dur:3.1s; --size:4px; --col:#ff3300; --glow:11px; --drift:-28px; --rise:-310px;"></div>
+      <div class="ember" style="--x:46%;  --delay:1.1s;  --dur:4.8s; --size:2px; --col:#ffdd00; --glow:7px;  --drift:55px;  --rise:-480px;"></div>
+      <div class="ember" style="--x:54%;  --delay:4.0s;  --dur:3.4s; --size:3px; --col:#ff6600; --glow:8px;  --drift:-50px; --rise:-330px;"></div>
+      <div class="ember" style="--x:51%;  --delay:5.2s;  --dur:2.6s; --size:2px; --col:#ff9900; --glow:6px;  --drift:12px;  --rise:-290px;"></div>
+      <div class="ember" style="--x:49%;  --delay:6.0s;  --dur:4.2s; --size:3px; --col:#ff4400; --glow:9px;  --drift:-35px; --rise:-410px;"></div>
+      <div class="ember" style="--x:52%;  --delay:1.8s;  --dur:3.7s; --size:2px; --col:#ffbb00; --glow:7px;  --drift:22px;  --rise:-350px;"></div>
+      <div class="ember" style="--x:48%;  --delay:3.5s;  --dur:5.0s; --size:4px; --col:#ff2200; --glow:12px; --drift:-60px; --rise:-500px;"></div>
+      <div class="ember" style="--x:53%;  --delay:0.2s;  --dur:3.3s; --size:2px; --col:#ffee00; --glow:6px;  --drift:38px;  --rise:-320px;"></div>
+      <div class="ember" style="--x:50%;  --delay:7.0s;  --dur:4.0s; --size:3px; --col:#ff5000; --glow:8px;  --drift:-20px; --rise:-400px;"></div>
+      <div class="ember" style="--x:44%;  --delay:2.2s;  --dur:3.5s; --size:2px; --col:#ff7700; --glow:7px;  --drift:48px;  --rise:-370px;"></div>
+      <div class="ember" style="--x:56%;  --delay:4.8s;  --dur:2.9s; --size:3px; --col:#ff3300; --glow:9px;  --drift:-32px; --rise:-280px;"></div>
+      <div class="ember" style="--x:51%;  --delay:5.6s;  --dur:4.4s; --size:2px; --col:#ffaa00; --glow:6px;  --drift:16px;  --rise:-440px;"></div>
+    </div>
+
+    <div class="relative z-10 max-w-4xl mx-auto">
+      <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:1.5rem; opacity:0; animation: fadeUp 0.8s ease 1.8s forwards;">
+        ✦ &nbsp; A D&D Campaign Chronicle &nbsp; ✦
+      </p>
+
+      <!-- Logo -->
+      <div class="logo-wrapper" style="margin-bottom:1.5rem; position:relative; display:inline-block;">
+        <h1 class="logo-glitch" style="
+          font-family: 'Cinzel Decorative', serif;
+          font-size: clamp(2.5rem, 8vw, 6rem);
+          font-weight: 700;
+          color: #f0c040;
+          line-height: 1.1;
+          position: relative;
+        ">
+          The Motley<br/>Marauders
+        </h1>
+      </div>
+
+      <div class="rune-divider" style="max-width:12rem; margin:0 auto 2rem; opacity:0; animation:fadeUp 0.8s ease 2s forwards;">
+        <span style="color:#c9a227;">⚔</span>
+      </div>
+
+      <p style="
+        color: #c9a96e;
+        font-family: 'IM Fell English', serif;
+        font-size: 1.2rem;
+        font-style: italic;
+        max-width: 36rem;
+        margin: 0 auto 3rem;
+        opacity: 0;
+        animation: fadeUp 0.8s ease 2.2s forwards;
+      ">
+        Twelve unlikely souls. Countless terrible plans. One epic adventure — still in progress.
+      </p>
+
+      <!-- Featured quote -->
+      <div class="parchment-card corner-ornament" style="max-width:36rem; margin:0 auto 3rem; padding:1.5rem;">
+        <blockquote class="dnd-quote">
+          <p style="margin-bottom:0.75rem; font-size:1.05rem;">"{featuredQuote.text}"</p>
+          <footer style="font-size:0.875rem; color:#c9a227; font-family:'Cinzel',serif; font-style:normal;">
+            — {featuredQuote.speaker}
+          </footer>
+        </blockquote>
+        <p style="font-size:0.75rem; margin-top:0.75rem; font-style:italic; color:#6b5a3e;">{featuredQuote.context}</p>
+      </div>
+
+      <!-- CTAs -->
+      <div style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:center;">
+        <a href="/story" style="
+          font-family:'Cinzel',serif;
+          font-size:0.875rem;
+          letter-spacing:0.12em;
+          text-transform:uppercase;
+          padding:0.75rem 1.5rem;
+          background:linear-gradient(135deg,#8b0000,#c0392b);
+          color:#f0c040;
+          border:1px solid #c9a227;
+          text-decoration:none;
+          transition:box-shadow 0.2s;
+        ">Read the Chronicle</a>
+        <a href="/characters" style="
+          font-family:'Cinzel',serif;
+          font-size:0.875rem;
+          letter-spacing:0.12em;
+          text-transform:uppercase;
+          padding:0.75rem 1.5rem;
+          background:transparent;
+          color:#c9a227;
+          border:1px solid #3d2e18;
+          text-decoration:none;
+        ">Meet the Party</a>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div style="position:absolute; bottom:2rem; left:50%; transform:translateX(-50%); opacity:0.4;" class="animate-bounce">
+      <svg width="24" height="24" fill="none" stroke="#c9a227" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Latest session -->
+  <section style="padding:5rem 1rem;">
+    <div style="max-width:72rem; margin:0 auto;">
+      <div style="text-align:center; margin-bottom:3rem;">
+        <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.3em; text-transform:uppercase; margin-bottom:0.75rem;">Latest Chapter</p>
+        <h2 style="font-family:'Cinzel',serif; color:#e8d5b0; font-size:1.875rem; font-weight:700;">Session {latestSession.session}</h2>
+      </div>
+
+      <div class="parchment-card corner-ornament" style="padding:2rem; max-width:48rem; margin:0 auto;">
+        <div style="display:flex; align-items:flex-start; gap:1rem; margin-bottom:1rem;">
+          <span style="font-size:2rem;">📜</span>
+          <div>
+            <h3 style="font-family:'Cinzel',serif; color:#f0c040; font-size:1.25rem; font-weight:700; margin-bottom:0.25rem;">{latestSession.title}</h3>
+            <p style="color:#c9a227; font-family:'Cinzel',serif; font-size:0.875rem;">📍 {latestSession.location}</p>
+          </div>
+        </div>
+
+        <p style="color:#c9a96e; line-height:1.75; margin-bottom:1.5rem;">{latestSession.summary}</p>
+
+        {latestSession.cliffhanger && (
+          <div style="border-left:2px solid #8b0000; padding-left:1rem; font-style:italic; color:#ff9999;">
+            <span style="font-family:'Cinzel',serif; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.08em; color:#8b0000; font-style:normal; display:block; margin-bottom:0.25rem;">⚠ Cliffhanger</span>
+            "{latestSession.cliffhanger}"
+          </div>
+        )}
+
+        <div style="margin-top:1.5rem; text-align:right;">
+          <a href="/story" style="font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:#c9a227; text-decoration:none;">All Sessions →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Party snapshot -->
+  <section style="padding:5rem 1rem; background:linear-gradient(to bottom, transparent, rgba(26,18,8,0.4), transparent);">
+    <div style="max-width:72rem; margin:0 auto;">
+      <div style="text-align:center; margin-bottom:3rem;">
+        <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.3em; text-transform:uppercase; margin-bottom:0.75rem;">The Adventuring Party</p>
+        <h2 style="font-family:'Cinzel',serif; color:#e8d5b0; font-size:1.875rem; font-weight:700;">The Marauders</h2>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:1rem; margin-bottom:2rem;">
+        {characters.map(char => (
+          <a href={`/characters#${char.name.toLowerCase().replace(/[\s()\/]/g,'-').replace(/-+/g,'-')}`}
+            class="parchment-card"
+            style="text-decoration:none; display:block; overflow:hidden; transition:border-color 0.2s;"
+          >
+            {char.image ? (
+              <div style="height:140px; overflow:hidden; position:relative;">
+                <img
+                  src={char.image}
+                  alt={char.name}
+                  style="width:100%; height:100%; object-fit:cover; object-position:top; filter:sepia(15%) contrast(1.05);"
+                />
+                <div style="position:absolute; inset:0; background:linear-gradient(to top, #1a1208 0%, transparent 60%);"></div>
+              </div>
+            ) : (
+              <div style="height:140px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#1a1208,#231a0e); font-size:3rem;">
+                {char.icon}
+              </div>
+            )}
+            <div style="padding:0.6rem; text-align:center;">
+              <h3 style="font-family:'Cinzel',serif; color:#e8d5b0; font-size:0.8rem; font-weight:700; margin-bottom:0.3rem; line-height:1.2;">
+                {char.name.split(' ')[0].split('(')[0].trim()}
+              </h3>
+              <span class={`badge-${char.classSlug}`} style="font-family:'Cinzel',serif; font-size:0.6rem; padding:0.15rem 0.4rem; border:1px solid; border-radius:9999px; display:inline-block;">
+                {char.class.split('/')[0].trim()}
+              </span>
+              {char.conditions?.length && (
+                <div style="margin-top:0.3rem; font-size:0.6rem; color:#f87171; font-family:'Cinzel',serif;">⚠ {char.conditions[0]}</div>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div style="text-align:center;">
+        <a href="/characters" style="font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:#c9a227; text-decoration:none;">View Full Bios →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quote reel -->
+  <section style="padding:5rem 1rem;">
+    <div style="max-width:56rem; margin:0 auto;">
+      <div style="text-align:center; margin-bottom:3rem;">
+        <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.3em; text-transform:uppercase; margin-bottom:0.75rem;">Words of Wisdom (Debatable)</p>
+        <h2 style="font-family:'Cinzel',serif; color:#e8d5b0; font-size:1.875rem; font-weight:700;">From the Mouths of Marauders</h2>
+      </div>
+
+      <div style="display:grid; gap:1.5rem; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));">
+        {quotes.slice(0, 4).map(quote => (
+          <div class="parchment-card" style="padding:1.5rem;">
+            <blockquote class="dnd-quote" style="margin-bottom:0.75rem;">
+              <p>"{quote.text}"</p>
+            </blockquote>
+            <p style="font-family:'Cinzel',serif; font-size:0.75rem; color:#c9a227;">— {quote.speaker}</p>
+            <p style="font-size:0.75rem; margin-top:0.25rem; font-style:italic; color:#6b5a3e;">{quote.context}</p>
+          </div>
+        ))}
+      </div>
+
+      <div style="text-align:center; margin-top:2rem;">
+        <a href="/quotes" style="font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:#c9a227; text-decoration:none;">All Quotes →</a>
+      </div>
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+/* ── Smoke wisps ────────────────────────────────────────── */
+.smoke-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.smoke-wisp {
+  position: absolute;
+  bottom: 36%;
+  left: var(--x);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 40% 60%,
+    var(--col-inner, rgba(255, 140, 30, 0.22)) 0%,
+    var(--col-mid,   rgba(180, 60, 10, 0.14))  35%,
+    var(--col-outer, rgba(80, 30, 0, 0.07))    65%,
+    transparent 80%
+  );
+  filter: blur(var(--blur, 22px));
+  animation: smokeRise var(--dur) ease-in var(--delay) infinite;
+  transform: translateX(-50%) scale(0.6);
+  opacity: 0;
+}
+
+@keyframes smokeRise {
+  0%   { opacity: 0; transform: translateX(calc(-50%)) translateY(0) scale(0.5) rotate(0deg); }
+  12%  { opacity: 1; }
+  60%  { opacity: 0.7; }
+  100% { opacity: 0; transform: translateX(calc(-50% + var(--drift))) translateY(-520px) scale(2.2) rotate(var(--rot, 15deg)); }
+}
+
+.ember {
+  position: absolute;
+  width: var(--size, 3px);
+  height: var(--size, 3px);
+  border-radius: 50%;
+  background: var(--col, #ff6a00);
+  box-shadow: 0 0 var(--glow, 6px) 2px var(--col, #ff6a00);
+  bottom: 36%;
+  left: var(--x);
+  opacity: 0;
+  animation: emberFloat var(--dur) ease-out var(--delay) infinite;
+}
+
+@keyframes emberFloat {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(0) scale(1); }
+  8%   { opacity: 1; }
+  70%  { opacity: 0.9; }
+  100% { opacity: 0; transform: translateX(calc(-50% + var(--drift))) translateY(var(--rise, -380px)) scale(0.2); }
+}
+
+/* ── Logo ───────────────────────────────────────────────── */
+.logo-wrapper {
+  animation: logoIn 1.0s cubic-bezier(0.23, 1, 0.32, 1) 0.3s both;
+}
+
+@keyframes logoIn {
+  0%   { opacity: 0; transform: scale(0.85) translateY(20px); filter: blur(8px); }
+  70%  { opacity: 1; transform: scale(1.03) translateY(-3px); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.logo-glitch {
+  text-shadow:
+    0 0 20px rgba(255, 160, 30, 0.55),
+    0 0 45px rgba(201, 162, 39, 0.35),
+    0 0 80px rgba(180, 60, 0, 0.20);
+  animation: logoPulse 2.4s ease-in-out 1.5s infinite;
+}
+
+@keyframes logoPulse {
+  0%, 100% {
+    text-shadow:
+      0 0 20px rgba(255, 160, 30, 0.55),
+      0 0 45px rgba(201, 162, 39, 0.35),
+      0 0 80px rgba(180, 60, 0, 0.20);
+  }
+  50% {
+    text-shadow:
+      0 0 30px rgba(255, 200, 60, 0.85),
+      0 0 65px rgba(220, 130, 20, 0.60),
+      0 0 110px rgba(200, 50, 0, 0.40),
+      0 0 160px rgba(139, 0, 0, 0.25);
+  }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+

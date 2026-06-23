@@ -1,0 +1,178 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { quotes } from '../data/story';
+import { characters } from '../data/characters';
+
+// Group quotes by speaker
+const bySpeaker = quotes.reduce((acc, q) => {
+  if (!acc[q.speaker]) acc[q.speaker] = [];
+  acc[q.speaker].push(q);
+  return acc;
+}, {} as Record<string, typeof quotes>);
+
+// Map speaker names to character classSlug for badge styling
+const speakerClass: Record<string, string> = {};
+characters.forEach(c => {
+  speakerClass[c.name] = c.classSlug;
+  // Handle quoted nicknames in names
+  const shortName = c.name.split('"')[0].trim();
+  speakerClass[shortName] = c.classSlug;
+});
+---
+
+<Layout title="Quotes" description="The best (and worst) things said by the Motley Marauders.">
+
+  <!-- Page header -->
+  <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18; position:relative; overflow:hidden;">
+
+    <!-- Star field -->
+    <div class="star-field" aria-hidden="true">
+      {Array.from({length: 80}).map((_, i) => (
+        <div class="star" style={`
+          --x: ${Math.random() * 100}%;
+          --y: ${Math.random() * 100}%;
+          --size: ${0.5 + Math.random() * 2}px;
+          --delay: ${Math.random() * 6}s;
+          --dur: ${4 + Math.random() * 8}s;
+          --drift-x: ${(Math.random() - 0.5) * 40}px;
+          --drift-y: ${(Math.random() - 0.5) * 30}px;
+          --twinkle-dur: ${1.5 + Math.random() * 3}s;
+          --twinkle-delay: ${Math.random() * 4}s;
+          --brightness: ${0.4 + Math.random() * 0.6};
+        `}></div>
+      ))}
+    </div>
+    <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:1rem;">Words to Live (and Die) By</p>
+    <h1 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:clamp(2rem,5vw,3.5rem); font-weight:700;" class="text-glow-gold">
+      The Quotebook
+    </h1>
+    <div class="rune-divider" style="max-width:16rem; margin:1.5rem auto 0;"></div>
+    <p style="color:#c9a96e; font-style:italic; margin-top:1rem; max-width:40rem; margin-left:auto; margin-right:auto;">
+      Collected utterances from the Motley Marauders — wise, foolish, and occasionally both at once.
+    </p>
+  </div>
+
+  <!-- Featured quote -->
+  <div style="padding:4rem 1rem 0;">
+    <div style="max-width:48rem; margin:0 auto;">
+      <div class="parchment-card corner-ornament" style="padding:2rem; border:1px solid #3d2e18; border-top:3px solid #c9a227; text-align:center;">
+        <p style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:1.5rem;">✦ Quote of the Campaign ✦</p>
+        <blockquote>
+          <p style="font-family:'IM Fell English',serif; font-style:italic; color:#e8d5b0; font-size:1.4rem; line-height:1.6; margin-bottom:1rem;">
+            "{quotes[5].text}"
+          </p>
+          <footer style="font-family:'Cinzel',serif; font-size:0.875rem; color:#c9a227;">
+            — {quotes[5].speaker}
+          </footer>
+        </blockquote>
+        <p style="font-size:0.8rem; margin-top:1rem; font-style:italic; color:#6b5a3e;">{quotes[5].context}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- All quotes -->
+  <div style="max-width:72rem; margin:0 auto; padding:4rem 1rem;">
+
+    <!-- Filter hint -->
+    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:2rem; flex-wrap:wrap;">
+      <p style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">By Speaker:</p>
+      {Object.keys(bySpeaker).map(speaker => {
+        const slug = speakerClass[speaker] || 'fighter';
+        return (
+          <a href={`#${speaker.toLowerCase().replace(/\s+/g,'-')}`}
+            class={`badge-${slug}`}
+            style="font-family:'Cinzel',serif; font-size:0.7rem; padding:0.2rem 0.6rem; border:1px solid; border-radius:9999px; text-decoration:none; cursor:pointer;"
+          >
+            {speaker.split(' ')[0]}
+          </a>
+        );
+      })}
+    </div>
+
+    <!-- Quotes by speaker -->
+    {Object.entries(bySpeaker).map(([speaker, speakerQuotes]) => {
+      const slug = speakerClass[speaker] || 'fighter';
+      const char = characters.find(c => c.name === speaker);
+      return (
+        <section id={speaker.toLowerCase().replace(/\s+/g,'-')} style="margin-bottom:3rem;">
+          <!-- Speaker header -->
+          <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
+            <span style="font-size:1.5rem;">{char?.icon ?? '🗡️'}</span>
+            <h2 style="font-family:'Cinzel',serif; color:#f0c040; font-size:1.25rem; font-weight:700;">{speaker}</h2>
+            <span class={`badge-${slug}`} style="font-family:'Cinzel',serif; font-size:0.7rem; padding:0.2rem 0.6rem; border:1px solid; border-radius:9999px;">
+              {char?.class ?? ''}
+            </span>
+          </div>
+
+          <div style="display:grid; gap:1rem; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));">
+            {speakerQuotes.map(quote => (
+              <div class="parchment-card" style="padding:1.25rem; position:relative;">
+                {quote.session && (
+                  <span style="position:absolute; top:0.75rem; right:0.75rem; font-family:'Cinzel',serif; font-size:0.65rem; color:#3d2e18; letter-spacing:0.05em;">
+                    Session {quote.session}
+                  </span>
+                )}
+                <blockquote class="dnd-quote" style="margin-bottom:0.75rem;">
+                  <p style="font-size:0.95rem;">"{quote.text}"</p>
+                </blockquote>
+                <p style="font-size:0.75rem; font-style:italic; color:#6b5a3e; line-height:1.5;">{quote.context}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      );
+    })}
+
+    <!-- Add your own -->
+    <div class="parchment-card" style="padding:2rem; border-style:dashed; text-align:center; margin-top:2rem;">
+      <p style="font-size:1.5rem; margin-bottom:0.75rem;">✍️</p>
+      <h3 style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:1rem; margin-bottom:0.5rem;">Something quotable happened?</h3>
+      <p style="color:#3d2e18; font-size:0.875rem; font-style:italic;">
+        Add it to <code style="color:#c9a96e; font-size:0.8rem;">src/data/story.ts</code> in the <code style="color:#c9a96e; font-size:0.8rem;">quotes</code> array.
+      </p>
+    </div>
+
+  </div>
+
+</Layout>
+
+<style>
+.star-field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: #fff;
+  opacity: var(--brightness);
+  box-shadow: 0 0 calc(var(--size) * 2) calc(var(--size) * 0.5) rgba(201, 162, 39, 0.5);
+  animation:
+    starDrift var(--dur) ease-in-out var(--delay) infinite alternate,
+    starTwinkle var(--twinkle-dur) ease-in-out var(--twinkle-delay) infinite;
+}
+
+@keyframes starDrift {
+  0%   { transform: translate(0, 0); }
+  100% { transform: translate(var(--drift-x), var(--drift-y)); }
+}
+
+@keyframes starTwinkle {
+  0%, 100% { opacity: var(--brightness); transform: scale(1); }
+  40%       { opacity: calc(var(--brightness) * 0.2); transform: scale(0.6); }
+  70%       { opacity: calc(var(--brightness) * 1.0); transform: scale(1.3); box-shadow: 0 0 calc(var(--size) * 4) calc(var(--size)) rgba(240, 192, 64, 0.8); }
+}
+
+/* Keep hero text above stars */
+.star-field ~ * {
+  position: relative;
+  z-index: 1;
+}
+</style>
