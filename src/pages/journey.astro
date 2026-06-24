@@ -271,7 +271,8 @@ import { journeyMilestones, storyUpdates } from '../data/story';
 
 @media (max-width: 640px) {
   .header-deco-img { display: none; }
-  .deco-mobile-show { display: block !important; width: 55vw; }
+  .deco-mobile-show { display: block !important; width: 55vw; left: auto !important; right: 0 !important; }
+  .deco-mobile-show img { opacity: 0.3 !important; object-position: center top !important; mask-image: linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%) !important; -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%) !important; }
   .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
   .stats-grid > *:last-child:nth-child(odd) { grid-column: 1 / -1; }
 }
