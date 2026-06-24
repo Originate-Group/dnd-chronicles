@@ -557,7 +557,7 @@ const latestSession = storyUpdates[storyUpdates.length - 1];
 }
 
 .carousel-card {
-  width: 230px;
+  width: clamp(180px, 60vw, 230px);
   flex-shrink: 0;
   text-decoration: none;
   display: block;
@@ -593,6 +593,17 @@ const latestSession = storyUpdates[storyUpdates.length - 1];
 .carousel-arrow:disabled {
   opacity: 0.25;
   cursor: default;
+}
+
+@media (max-width: 640px) {
+  .carousel-outer {
+    padding: 0 2rem;
+  }
+  .carousel-arrow {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.875rem;
+  }
 }
 
 /* ── Hero buttons ───────────────────────────────────────── */

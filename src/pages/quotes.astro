@@ -37,7 +37,7 @@ function findSpeakerIcon(name: string): string | undefined {
   <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18; position:relative; overflow:hidden;">
 
     <!-- Goblin Village — left side -->
-    <div style="position:absolute; left:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+    <div class="header-deco-img" style="position:absolute; left:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
       <img
         src="/goblin-village.jpg"
         alt="Goblin Village"
@@ -46,7 +46,7 @@ function findSpeakerIcon(name: string): string | undefined {
     </div>
 
     <!-- Great Protector — right side -->
-    <div style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+    <div class="header-deco-img" style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
       <img
         src="/great-protector.jpg"
         alt="The Great Protector"
@@ -230,5 +230,9 @@ function findSpeakerIcon(name: string): string | undefined {
 .star-field ~ * {
   position: relative;
   z-index: 1;
+}
+
+@media (max-width: 640px) {
+  .header-deco-img { display: none; }
 }
 </style>

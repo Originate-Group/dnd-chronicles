@@ -24,7 +24,7 @@ function getQuote(charName: string, fallback: string): string {
   <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18; position:relative; overflow:hidden;">
 
     <!-- Trees — left side -->
-    <div style="position:absolute; left:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+    <div class="header-deco-img" style="position:absolute; left:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
       <img
         src="/trees.jpg"
         alt=""
@@ -33,7 +33,7 @@ function getQuote(charName: string, fallback: string): string {
     </div>
 
     <!-- Bonfire — right side -->
-    <div style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+    <div class="header-deco-img" style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
       <img
         src="/bonfire.jpg"
         alt=""
@@ -77,10 +77,10 @@ function getQuote(charName: string, fallback: string): string {
           style={`margin-bottom:3rem; overflow:hidden; border-left:3px solid ${i % 2 === 0 ? '#8b0000' : '#c9a227'};`}
         >
           <!-- Top section: portrait + identity + stats -->
-          <div style="display:grid; grid-template-columns:auto 1fr; gap:0;">
+          <div class="char-grid" style="display:grid; grid-template-columns:auto 1fr; gap:0;">
 
             <!-- Portrait -->
-            <div style="width:200px; flex-shrink:0; position:relative; overflow:hidden; background:#1a1208;">
+            <div class="char-portrait" style="width:200px; flex-shrink:0; position:relative; overflow:hidden; background:#1a1208;">
               {char.image ? (
                 <img
                   src={char.image}
@@ -213,13 +213,17 @@ function getQuote(charName: string, fallback: string): string {
 <style>
   /* Responsive: stack portrait on mobile */
   @media (max-width: 640px) {
-    article > div[style*="grid-template-columns:auto 1fr"] {
+    .char-grid {
       grid-template-columns: 1fr !important;
     }
-    article > div img {
+    .char-portrait {
+      width: 100% !important;
+    }
+    .char-portrait img {
       width: 100% !important;
       height: 220px !important;
     }
+    .header-deco-img { display: none; }
   }
 
 </style>

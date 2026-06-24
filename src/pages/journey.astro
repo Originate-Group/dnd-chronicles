@@ -10,7 +10,7 @@ import { journeyMilestones, storyUpdates } from '../data/story';
     <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18; position:relative; overflow:hidden;">
 
       <!-- Serpent — left side -->
-      <div style="position:absolute; left:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+      <div class="header-deco-img" style="position:absolute; left:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
         <img
           src="/serpent.jpg"
           alt=""
@@ -19,7 +19,7 @@ import { journeyMilestones, storyUpdates } from '../data/story';
       </div>
 
       <!-- Dwarfs — right side -->
-      <div style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+      <div class="header-deco-img" style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
         <img
           src="/dwarfs.jpg"
           alt=""
@@ -262,5 +262,9 @@ import { journeyMilestones, storyUpdates } from '../data/story';
 @keyframes lonePulse {
   0%, 100% { opacity: 0; }
   20%, 80%  { opacity: 0.55; filter: drop-shadow(0 0 4px rgba(201,162,39,0.8)); }
+}
+
+@media (max-width: 640px) {
+  .header-deco-img { display: none; }
 }
 </style>

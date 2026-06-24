@@ -59,8 +59,8 @@ const navLinks = [
           ))}
         </nav>
 
-        <!-- Mobile menu toggle (decorative for now) -->
-        <button class="md:hidden text-parchment-dark" style="color: #c9a96e;" aria-label="Menu">
+        <!-- Mobile menu toggle -->
+        <button id="mobile-menu-btn" class="md:hidden text-parchment-dark" style="color: #c9a96e;" aria-label="Menu" aria-expanded="false">
           <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
@@ -68,7 +68,7 @@ const navLinks = [
       </div>
 
       <!-- Mobile Nav -->
-      <nav class="md:hidden border-t border-stone-800/50 px-4 py-3 flex flex-wrap gap-4">
+      <nav id="mobile-nav" class="md:hidden border-t border-stone-800/50 px-4 py-3 flex flex-wrap gap-4" style="display: none;">
         {navLinks.map(link => (
           <a
             href={link.href}
@@ -131,6 +131,18 @@ const navLinks = [
     </button>
 
     <script is:inline>
+      // Mobile menu toggle
+      (function () {
+        const btn = document.getElementById('mobile-menu-btn');
+        const nav = document.getElementById('mobile-nav');
+        if (!btn || !nav) return;
+        btn.addEventListener('click', () => {
+          const isOpen = btn.getAttribute('aria-expanded') === 'true';
+          btn.setAttribute('aria-expanded', String(!isOpen));
+          nav.style.display = isOpen ? 'none' : 'flex';
+        });
+      })();
+
       (function () {
         const els = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur, .reveal-rotate');
         if (!els.length) return;

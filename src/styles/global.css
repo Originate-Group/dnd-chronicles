@@ -279,3 +279,18 @@ blockquote.dnd-quote {
 ::-webkit-scrollbar-track { background: #0d0a07; }
 ::-webkit-scrollbar-thumb { background: #3d2e18; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #c9a227; }
+
+@media (max-width: 640px) {
+  body {
+    line-height: 1.65;
+  }
+  .nav-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .site-btn {
+    padding: 0.7rem 1.2rem;
+    min-height: 44px;
+  }
+}
