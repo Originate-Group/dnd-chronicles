@@ -33,7 +33,7 @@ function getQuote(charName: string, fallback: string): string {
     </div>
 
     <!-- Bonfire — right side -->
-    <div class="header-deco-img" style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+    <div class="header-deco-img deco-mobile-show" style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
       <img
         src="/bonfire.jpg"
         alt=""
@@ -230,6 +230,7 @@ function getQuote(charName: string, fallback: string): string {
       max-width: 100% !important;
     }
     .header-deco-img { display: none; }
+    .deco-mobile-show { display: block; width: 55vw; }
   }
 
 </style>

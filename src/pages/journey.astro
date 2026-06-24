@@ -10,7 +10,7 @@ import { journeyMilestones, storyUpdates } from '../data/story';
     <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18; position:relative; overflow:hidden;">
 
       <!-- Serpent — left side -->
-      <div class="header-deco-img" style="position:absolute; left:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+      <div class="header-deco-img deco-mobile-show" style="position:absolute; left:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
         <img
           src="/serpent.jpg"
           alt=""
@@ -271,6 +271,7 @@ import { journeyMilestones, storyUpdates } from '../data/story';
 
 @media (max-width: 640px) {
   .header-deco-img { display: none; }
+  .deco-mobile-show { display: block; width: 55vw; }
   .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
   .stats-grid > *:last-child:nth-child(odd) { grid-column: 1 / -1; }
 }

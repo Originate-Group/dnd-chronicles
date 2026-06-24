@@ -28,7 +28,7 @@ const embers = Array.from({ length: 55 }, () => ({
     </div>
 
     <!-- Dungeon — right side -->
-    <div class="header-deco-img" style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+    <div class="header-deco-img deco-mobile-show" style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
       <img
         src="/dungeon.jpg"
         alt="Dungeon"
@@ -444,6 +444,7 @@ mark.search-hl {
 
 @media (max-width: 640px) {
   .header-deco-img { display: none; }
+  .deco-mobile-show { display: block; width: 55vw; }
 }
 </style>
 

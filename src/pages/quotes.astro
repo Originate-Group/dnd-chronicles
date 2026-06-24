@@ -54,7 +54,7 @@ function findSpeakerSubtitle(name: string): string | undefined {
     </div>
 
     <!-- Great Protector — right side -->
-    <div class="header-deco-img" style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+    <div class="header-deco-img deco-mobile-show" style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
       <img
         src="/great-protector.jpg"
         alt="The Great Protector"
@@ -253,5 +253,6 @@ function findSpeakerSubtitle(name: string): string | undefined {
 
 @media (max-width: 640px) {
   .header-deco-img { display: none; }
+  .deco-mobile-show { display: block; width: 55vw; }
 }
 </style>
