@@ -300,6 +300,7 @@ blockquote.dnd-quote {
   flex-direction: column;
   gap: 0.3rem;
   flex-shrink: 0;
+  margin-left: -2.5rem;
 }
 .map-zoom-btn {
   width: 2rem;
