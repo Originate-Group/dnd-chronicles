@@ -141,7 +141,7 @@ import { journeyMilestones, storyUpdates } from '../data/story';
 
     <!-- Stats bar -->
     <div class="reveal" style="border-bottom:1px solid #3d2e18; padding:1.5rem 1rem;">
-      <div style="max-width:72rem; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:1rem; text-align:center;">
+      <div class="stats-grid" style="max-width:72rem; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:1rem; text-align:center;">
         {[
           { label: 'Sessions Played',   value: storyUpdates.length },
           { label: 'Locations Visited', value: journeyMilestones.length },
@@ -271,5 +271,7 @@ import { journeyMilestones, storyUpdates } from '../data/story';
 
 @media (max-width: 640px) {
   .header-deco-img { display: none; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .stats-grid > *:last-child:nth-child(odd) { grid-column: 1 / -1; }
 }
 </style>

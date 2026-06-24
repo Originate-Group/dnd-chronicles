@@ -150,7 +150,7 @@ function getQuote(charName: string, fallback: string): string {
           <div class="rune-divider" style="margin:0 1.5rem;"></div>
 
           <!-- Bio + Quote -->
-          <div style="padding:1.5rem; display:grid; grid-template-columns:1fr auto; gap:2rem; align-items:start;">
+          <div class="char-bio-grid" style="padding:1.5rem; display:grid; grid-template-columns:1fr auto; gap:2rem; align-items:start;">
             <div>
               <h3 style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:0.75rem;">Background</h3>
               <p style="color:#c9a96e; line-height:1.8; font-size:0.95rem;">{char.bio}</p>
@@ -222,6 +222,12 @@ function getQuote(charName: string, fallback: string): string {
     .char-portrait img {
       width: 100% !important;
       height: 220px !important;
+    }
+    .char-bio-grid {
+      grid-template-columns: 1fr !important;
+    }
+    .char-bio-grid blockquote {
+      max-width: 100% !important;
     }
     .header-deco-img { display: none; }
   }

@@ -60,25 +60,60 @@ const navLinks = [
         </nav>
 
         <!-- Mobile menu toggle -->
-        <button id="mobile-menu-btn" class="md:hidden text-parchment-dark" style="color: #c9a96e;" aria-label="Menu" aria-expanded="false">
-          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        <button id="mobile-menu-btn" class="md:hidden" aria-label="Menu" aria-expanded="false" style="color:#c9a96e; background:none; border:none; cursor:pointer; z-index:200; position:relative;">
+          <!-- Tankard of mead icon -->
+          <svg id="menu-icon-open" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Tankard body -->
+            <path d="M4 5 L4 20 Q4 21 5 21 L16 21 Q17 21 17 20 L16 5 Z" fill="rgba(201,169,110,0.12)"/>
+            <!-- Handle -->
+            <path d="M17 8 C22 8 22 17 17 17"/>
+            <!-- Foam top -->
+            <path d="M4 5 Q5.5 3 7 5 Q8.5 3 10 5 Q11.5 3 13 5 Q14.5 3 17 5"/>
+            <!-- Three lines inside -->
+            <line x1="7" y1="9.5" x2="13" y2="9.5"/>
+            <line x1="7" y1="13" x2="13" y2="13"/>
+            <line x1="7" y1="16.5" x2="13" y2="16.5"/>
+          </svg>
+          <!-- Close icon -->
+          <svg id="menu-icon-close" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none;" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
       </div>
+    </header>
 
-      <!-- Mobile Nav -->
-      <nav id="mobile-nav" class="md:hidden border-t border-stone-800/50 px-4 py-3 flex flex-wrap gap-4" style="display: none;">
+    <!-- Fullscreen mobile nav overlay -->
+    <div id="mobile-nav" style="
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 150;
+      background: rgba(10,7,4,0.97);
+      backdrop-filter: blur(12px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+    ">
+      <!-- Decorative top/bottom borders -->
+      <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(to right, transparent, #c9a227, transparent);"></div>
+      <div style="position:absolute; bottom:0; left:0; right:0; height:3px; background:linear-gradient(to right, transparent, #c9a227, transparent);"></div>
+
+      <div style="font-family:'Cinzel Decorative',serif; color:#c9a227; font-size:0.65rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:3rem; opacity:0.6;">Navigate</div>
+
+      <nav style="display:flex; flex-direction:column; align-items:center; gap:2rem;">
         {navLinks.map(link => (
           <a
             href={link.href}
-            class={`nav-link text-sm ${currentPath === link.href ? 'active' : ''}`}
+            style={`font-family:'Cinzel',serif; font-size:1.6rem; font-weight:700; letter-spacing:0.08em; text-decoration:none; transition:color 0.2s, text-shadow 0.2s; ${currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href)) ? 'color:#f0c040; text-shadow:0 0 20px rgba(201,162,39,0.4);' : 'color:#c9a96e;'}`}
           >
             {link.label}
           </a>
         ))}
       </nav>
-    </header>
+
+      <div style="position:absolute; bottom:2.5rem; font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.2em; color:#3d2e18; text-transform:uppercase;">The Motley Marauders</div>
+    </div>
 
     <!-- Main -->
     <main class="flex-1">
@@ -133,14 +168,33 @@ const navLinks = [
     <script is:inline>
       // Mobile menu toggle
       (function () {
-        const btn = document.getElementById('mobile-menu-btn');
-        const nav = document.getElementById('mobile-nav');
+        const btn      = document.getElementById('mobile-menu-btn');
+        const nav      = document.getElementById('mobile-nav');
+        const iconOpen = document.getElementById('menu-icon-open');
+        const iconClose= document.getElementById('menu-icon-close');
         if (!btn || !nav) return;
+
+        function openMenu() {
+          nav.style.display = 'flex';
+          btn.setAttribute('aria-expanded', 'true');
+          iconOpen.style.display  = 'none';
+          iconClose.style.display = 'block';
+          document.body.style.overflow = 'hidden';
+        }
+        function closeMenu() {
+          nav.style.display = 'none';
+          btn.setAttribute('aria-expanded', 'false');
+          iconOpen.style.display  = 'block';
+          iconClose.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+
         btn.addEventListener('click', () => {
-          const isOpen = btn.getAttribute('aria-expanded') === 'true';
-          btn.setAttribute('aria-expanded', String(!isOpen));
-          nav.style.display = isOpen ? 'none' : 'flex';
+          btn.getAttribute('aria-expanded') === 'true' ? closeMenu() : openMenu();
         });
+
+        // Close when a nav link is clicked
+        nav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
       })();
 
       (function () {

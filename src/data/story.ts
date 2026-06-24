@@ -367,7 +367,7 @@ export const journeyMilestones: JourneyMilestone[] = [
     title: "The Gnoll Hunt",
     location: "Wilderness outside Donnel",
     description: "Fifteen gnoll ears and a wizard's loot — the party's first real taste of the wilds.",
-    icon: `<svg viewBox="0 0 20 20" fill="#f0c040" xmlns="http://www.w3.org/2000/svg" width="22" height="22"><ellipse cx="10" cy="13" rx="4" ry="4"/><circle cx="6" cy="8.5" r="2"/><circle cx="14" cy="8.5" r="2"/><circle cx="3" cy="12.5" r="1.6"/><circle cx="17" cy="12.5" r="1.6"/></svg>`,
+    icon: `<svg viewBox="0 0 20 20" fill="none" stroke="#f0c040" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" width="22" height="22"><path d="M5 4 L4 17 Q4 18 5 18 L15 18 Q16 18 15 17 L14 4 Z" fill="rgba(240,192,64,0.15)"/><path d="M14 7 C18 7 18 15 14 15"/><path d="M4 4 Q5.5 2.5 7 4 Q8.5 2.5 10 4 Q11.5 2.5 13 4 Q14.5 2.5 15 4"/><line x1="7" y1="8" x2="12" y2="8"/><line x1="7" y1="11" x2="12" y2="11"/><line x1="7" y1="14" x2="12" y2="14"/></svg>`,
     tags: ["Bounty", "Combat"],
   },
   {
