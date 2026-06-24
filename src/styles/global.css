@@ -276,6 +276,56 @@ blockquote.dnd-quote {
 
 /* Scrollbar */
 
+/* ── Zoomable map ──────────────────────────────────────────── */
+.map-zoom-wrap {
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  max-width: 700px;
+  margin: 0 auto;
+  border-radius: 4px;
+  touch-action: none;
+}
+.map-zoom-wrap.dragging { cursor: grabbing; }
+.map-zoom-img {
+  width: 100%;
+  display: block;
+  transform-origin: 0 0;
+  transition: transform 0.18s ease;
+  user-select: none;
+  pointer-events: none;
+}
+.map-zoom-controls {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  z-index: 10;
+}
+.map-zoom-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 1px solid #c9a227;
+  background: rgba(13,10,7,0.82);
+  color: #c9a227;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.map-zoom-btn:hover {
+  color: #f0c040;
+  border-color: #f0c040;
+  background: rgba(26,18,8,0.92);
+}
+
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: #0d0a07; }
 ::-webkit-scrollbar-thumb { background: #3d2e18; border-radius: 4px; }

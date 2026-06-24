@@ -181,6 +181,118 @@ const navLinks = [
           btn.style.boxShadow   = 'none';
         });
       })();
+
+      // Zoomable map
+      (function () {
+        document.querySelectorAll('.map-zoom-wrap').forEach(wrap => {
+          const img = wrap.querySelector('.map-zoom-img');
+          const MIN = 1, MAX = 4, STEP = 0.4;
+          let scale = 1, ox = 0, oy = 0;
+
+          function clamp(val, lo, hi) { return Math.max(lo, Math.min(hi, val)); }
+
+          function apply(animated) {
+            img.style.transition = animated ? 'transform 0.18s ease' : 'none';
+            img.style.transform  = `translate(${ox}px,${oy}px) scale(${scale})`;
+          }
+
+          function clampPan() {
+            const iw = wrap.offsetWidth  * scale;
+            const ih = wrap.offsetHeight * scale;
+            const ww = wrap.offsetWidth;
+            const wh = wrap.offsetHeight;
+            ox = clamp(ox, Math.min(0, ww - iw), 0);
+            oy = clamp(oy, Math.min(0, wh - ih), 0);
+          }
+
+          function zoomTo(newScale, cx, cy) {
+            // cx/cy = focal point in wrap coords
+            const ratio = newScale / scale;
+            ox = cx - ratio * (cx - ox);
+            oy = cy - ratio * (cy - oy);
+            scale = newScale;
+            clampPan();
+            apply(true);
+          }
+
+          function reset() { scale = 1; ox = 0; oy = 0; apply(true); }
+
+          // Buttons
+          wrap.querySelectorAll('.map-zoom-btn').forEach(btn => {
+            btn.addEventListener('click', e => {
+              e.stopPropagation();
+              const action = btn.dataset.zoom;
+              const cx = wrap.offsetWidth  / 2;
+              const cy = wrap.offsetHeight / 2;
+              if (action === 'in')    zoomTo(clamp(scale + STEP, MIN, MAX), cx, cy);
+              if (action === 'out')   zoomTo(clamp(scale - STEP, MIN, MAX), cx, cy);
+              if (action === 'reset') reset();
+            });
+          });
+
+          // Mouse wheel
+          wrap.addEventListener('wheel', e => {
+            e.preventDefault();
+            const rect = wrap.getBoundingClientRect();
+            const cx   = e.clientX - rect.left;
+            const cy   = e.clientY - rect.top;
+            const delta = e.deltaY < 0 ? STEP : -STEP;
+            zoomTo(clamp(scale + delta, MIN, MAX), cx, cy);
+          }, { passive: false });
+
+          // Mouse drag
+          let drag = false, startX, startY, startOx, startOy;
+          wrap.addEventListener('mousedown', e => {
+            if (scale <= 1) return;
+            drag = true; wrap.classList.add('dragging');
+            startX = e.clientX; startY = e.clientY;
+            startOx = ox; startOy = oy;
+          });
+          window.addEventListener('mousemove', e => {
+            if (!drag) return;
+            ox = startOx + (e.clientX - startX);
+            oy = startOy + (e.clientY - startY);
+            clampPan(); apply(false);
+          });
+          window.addEventListener('mouseup', () => {
+            drag = false; wrap.classList.remove('dragging');
+          });
+
+          // Touch pinch + drag
+          let lastDist = null, lastTx, lastTy, lastTOx, lastTOy;
+          wrap.addEventListener('touchstart', e => {
+            if (e.touches.length === 2) {
+              lastDist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+              );
+            } else if (e.touches.length === 1 && scale > 1) {
+              lastTx = e.touches[0].clientX; lastTy = e.touches[0].clientY;
+              lastTOx = ox; lastTOy = oy;
+            }
+          }, { passive: true });
+          wrap.addEventListener('touchmove', e => {
+            if (e.touches.length === 2) {
+              e.preventDefault();
+              const dist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+              );
+              const rect = wrap.getBoundingClientRect();
+              const cx = ((e.touches[0].clientX + e.touches[1].clientX) / 2) - rect.left;
+              const cy = ((e.touches[0].clientY + e.touches[1].clientY) / 2) - rect.top;
+              zoomTo(clamp(scale * (dist / lastDist), MIN, MAX), cx, cy);
+              lastDist = dist;
+            } else if (e.touches.length === 1 && scale > 1) {
+              e.preventDefault();
+              ox = lastTOx + (e.touches[0].clientX - lastTx);
+              oy = lastTOy + (e.touches[0].clientY - lastTy);
+              clampPan(); apply(false);
+            }
+          }, { passive: false });
+          wrap.addEventListener('touchend', () => { lastDist = null; });
+        });
+      })();
     </script>
   </body>
 </html>
