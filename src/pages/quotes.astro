@@ -20,7 +20,12 @@ characters.forEach(c => {
 });
 
 // Build a lookup that includes companions (e.g. Boblin)
+const speakerExtras: Record<string, { image?: string; subtitle?: string }> = {
+  "The Great Protector": { image: "/great-protector.jpg", subtitle: "Greater Green Dragon" },
+};
+
 function findSpeakerImage(name: string): string | undefined {
+  if (speakerExtras[name]?.image) return speakerExtras[name].image;
   const pc = characters.find(c => c.name === name);
   if (pc?.image) return pc.image;
   const npc = companions.find(c => c.name === name);
@@ -28,6 +33,9 @@ function findSpeakerImage(name: string): string | undefined {
 }
 function findSpeakerIcon(name: string): string | undefined {
   return characters.find(c => c.name === name)?.icon;
+}
+function findSpeakerSubtitle(name: string): string | undefined {
+  return speakerExtras[name]?.subtitle;
 }
 ---
 
@@ -163,7 +171,12 @@ function findSpeakerIcon(name: string): string | undefined {
               ? <img src={findSpeakerImage(speaker)} alt={speaker} style="width:2.75rem; height:2.75rem; border-radius:50%; object-fit:cover; object-position:top; border:2px solid #3d2e18; flex-shrink:0;"/>
               : <div style="width:2.75rem; height:2.75rem; border-radius:50%; background:linear-gradient(135deg,#1a1208,#231a0e); border:2px solid #3d2e18; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;">{findSpeakerIcon(speaker) ?? '⚔'}</div>
             }
-            <h2 style="font-family:'Cinzel',serif; color:#f0c040; font-size:1.25rem; font-weight:700;">{speaker}</h2>
+            <div>
+              <h2 style="font-family:'Cinzel',serif; color:#f0c040; font-size:1.25rem; font-weight:700; line-height:1.2;">{speaker}</h2>
+              {findSpeakerSubtitle(speaker) && (
+                <p style="font-family:'Cinzel',serif; color:#6ee7b7; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; margin-top:0.2rem; opacity:0.85;">{findSpeakerSubtitle(speaker)}</p>
+              )}
+            </div>
             <span class={`badge-${slug}`} style="font-family:'Cinzel',serif; font-size:0.7rem; padding:0.2rem 0.6rem; border:1px solid; border-radius:9999px;">
               {(char as any)?.class ?? (char as any)?.type ?? ''}
             </span>

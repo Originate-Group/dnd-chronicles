@@ -102,7 +102,7 @@ const latestSession = storyUpdates[storyUpdates.length - 1];
       </p>
 
       <!-- Rotating quote -->
-      <div id="rotating-quote-wrap" class="parchment-card corner-ornament" style="max-width:48rem; margin:0 auto 3rem; padding:2rem; opacity:0; animation:fadeUp 0.9s ease 2.4s forwards; border-top:3px solid #c9a227; text-align:center;">
+      <div id="rotating-quote-wrap" class="parchment-card corner-ornament reveal-scale" style="max-width:48rem; margin:0 auto 3rem; padding:2rem; border-top:3px solid #c9a227; text-align:center;">
         <p style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:1.5rem;">✦ Quote of the Campaign ✦</p>
         <blockquote id="rq-blockquote">
           <p id="rq-text" style="font-family:'IM Fell English',serif; font-style:italic; color:#e8d5b0; font-size:1.4rem; line-height:1.6; margin-bottom:1rem;"></p>
@@ -138,7 +138,7 @@ const latestSession = storyUpdates[storyUpdates.length - 1];
 
         setQuote(rqQuotes[0]);
         // Add transition after hero animation completes so they don't conflict
-        setTimeout(() => { wrap.style.transition = 'opacity 1.4s ease'; }, 3500);
+        setTimeout(() => { wrap.style.transition = 'opacity 1.4s ease'; }, 800);
         setInterval(cycle, HOLD + FADE);
       })();
       </script>
