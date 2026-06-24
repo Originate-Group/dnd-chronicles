@@ -62,12 +62,12 @@ export const storyUpdates: StoryUpdate[] = [
     title: "The Bounty Board & the Road to Velento",
     location: "Donnel → Velento",
     summary:
-      "With Conrad recovering, the party turned to the Hunter/Slayer Guild and its bounty board. Guild leader Jemima laid out four contracts: basilisk, chimera, a gnoll herd at 50gp per ear, and the big one — the head of a goblin village leader for a rumoured 25,000gp. The guild also shared intelligence on the orc brothers Karkath and Grommak, who were running raids with a large warband and had been hitting centaur and minotaur villages. Conrad, recovered, confirmed the opal came from a monastery in Cahiver — traded for a sacred town stone. The party set out toward Velento, noting the decay in the forests getting worse the further they travelled.",
+      "With Conrad recovering, the party turned to the Hunter/Slayer Guild and its bounty board. Guild leader Jemima laid out four contracts: basilisk, chimera, a gnoll herd at 50gp per ear, and the big one — the head of a goblin village leader for a rumoured 25,000gp. The guild also shared intelligence on the orc brothers Karkath and Grommak, who were running raids with a large warband and had been hitting centaur and minotaur villages. Conrad, recovered, confirmed the opal came from a monastery in Khaver — traded for a sacred town stone. The party set out toward Velento, noting the decay in the forests getting worse the further they travelled.",
     highlights: [
       "Bounty board accessed — four contracts: basilisk (3,000gp), chimera (5,000gp), gnolls (50gp/ear), goblin village (25,000gp+)",
       "Guild Leader Jemima provided intelligence on the orc brothers Karkath and Grommak",
       "Orc warband confirmed: trolls, orcs, hobgoblins, ogres — raiding centaur and minotaur villages",
-      "Conrad confirmed the opal originated from Cahiver Monastery — traded for the North Temple Town Stone",
+      "Conrad confirmed the opal originated from Khaver Monastery — traded for the North Temple Town Stone",
       "Forest decay noted as worsening — Delargor Woods referenced",
       "Party departed for Velento, following the main trade route",
       "Party reached Level 2",
@@ -152,16 +152,16 @@ export const storyUpdates: StoryUpdate[] = [
   },
   {
     session: 8,
-    title: "Cahiver — The Monastery Chase",
+    title: "Khaver — The Monastery Chase",
     date: "10/05/25",
-    location: "Cahiver",
+    location: "Khaver",
     summary:
-      "Crowley needed information from Cahiver's library to close the rift he'd accidentally opened trying to summon a demon. He gave the party a Scroll of Dispel Magic as a gesture of good faith and promised 100gp each for the trip. They travelled to Cahiver — past a giant near the camp — and split up across the city's religious quarter. The Monastery held most of what they needed, but also a problem: a suspicious male humanoid in a skeletal robe had been asking about rifts and rituals. The party gave chase. Twenty civilian casualties in the chaos. The Necromancer teleported away. Brother Ignacious — a Genasi-Fire monk who'd gone missing after the suspicious visitor — died in the fight. He was carrying a torn page. The party was arrested. All equipment confiscated.",
+      "Crowley needed information from Khaver's library to close the rift he'd accidentally opened trying to summon a demon. He gave the party a Scroll of Dispel Magic as a gesture of good faith and promised 100gp each for the trip. They travelled to Khaver — past a giant near the camp — and split up across the city's religious quarter. The Monastery held most of what they needed, but also a problem: a suspicious male humanoid in a skeletal robe had been asking about rifts and rituals. The party gave chase. Twenty civilian casualties in the chaos. The Necromancer teleported away. Brother Ignacious — a Genasi-Fire monk who'd gone missing after the suspicious visitor — died in the fight. He was carrying a torn page. The party was arrested. All equipment confiscated.",
     highlights: [
-      "Crowley's request: find ritual information in Cahiver to close the rift — 100gp each",
+      "Crowley's request: find ritual information in Khaver to close the rift — 100gp each",
       "Scroll of Dispel Magic received from Crowley as good faith",
       "Giant encountered near camp during travel — navigated",
-      "Cahiver reached — party split across Monastery, Raven Queen temple, and Ioune temple",
+      "Khaver reached — party split across Monastery, Raven Queen temple, and Ioune temple",
       "Suspicious humanoid identified in the Monastery — skeletal robe, dark hair, 6ft, not technically human",
       "Chase through the city — 20 civilian casualties",
       "Necromancer teleported away before capture",
@@ -174,7 +174,7 @@ export const storyUpdates: StoryUpdate[] = [
     session: 9,
     title: "Behind Bars — The Motley Marauders",
     date: "29/06/25",
-    location: "Cahiver Prison → Bellport",
+    location: "Khaver Prison → Bellport",
     summary:
       "Released from the cells with 250gp and their equipment returned, the party found that local witnesses had given them a name: the Motley Marauders. It stuck. Ulster, the monastery head, arranged the release on the condition of a training combat session — the party fought in structured 3v3 bouts against monastery fighters. They won. Outside the gates, a human named Bort was waiting — a friend of a friend who'd vouched for them. The party headed to Bellport, found it a working port town, and took on a job: Captain Damon needed crew for The Red Fall, a delivery run north paying 25gp a day. The ship had cannons. The cargo was flammable. They signed on.",
     highlights: [
@@ -392,8 +392,8 @@ export const journeyMilestones: JourneyMilestone[] = [
     tags: ["Major Revelation", "NPC Lore"],
   },
   {
-    title: "Cahiver Monastery",
-    location: "Cahiver",
+    title: "Khaver Monastery",
+    location: "Khaver",
     description: "The rift is under the monastery. The mission: five stones, one Lich, one First Vampire. Ignacious is missing. The Raven Queen said keep going.",
     icon: `<svg viewBox="0 0 20 20" fill="#f0c040" xmlns="http://www.w3.org/2000/svg" width="22" height="22"><rect x="2" y="10" width="16" height="9"/><path d="M5 10V8A5 5 0 0 1 15 8v2" fill="none" stroke="#f0c040" stroke-width="2"/><rect x="8.5" y="12" width="3" height="7" fill="#1a1208"/><line x1="10" y1="2" x2="10" y2="6" stroke="#f0c040" stroke-width="1.5"/><line x1="8" y1="4" x2="12" y2="4" stroke="#f0c040" stroke-width="1.5"/></svg>`,
     tags: ["Investigation", "Mystery", "Level 5"],
@@ -514,7 +514,7 @@ export const quotes: Quote[] = [
   {
     text: "So close. But so far.",
     speaker: "Mephiston",
-    context: "Said with a wink to Morg after she fumbled Hold Person on a non-humanoid in the Cahiver tavern. It smelled familiar.",
+    context: "Said with a wink to Morg after she fumbled Hold Person on a non-humanoid in the Khaver tavern. It smelled familiar.",
     session: 6,
   },
   {
