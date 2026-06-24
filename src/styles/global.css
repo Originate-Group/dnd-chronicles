@@ -133,6 +133,57 @@ h1, h2, h3, h4, h5, h6 {
 .nav-link.active { color: #c9a227; }
 .nav-link.active::after { width: 100%; }
 
+/* Site-wide secondary button style */
+.site-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 9999px;
+  border: 1px solid #c9a227;
+  background: transparent;
+  color: #c9a227;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.34,1.45,0.64,1), box-shadow 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+.site-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%);
+  transform: translateX(-100%);
+  transition: transform 0.45s ease;
+}
+.site-btn:hover::before { transform: translateX(100%); }
+.site-btn:hover {
+  color: #f0c040;
+  border-color: #f0c040;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 18px rgba(201,162,39,0.28), 0 4px 14px rgba(0,0,0,0.3);
+}
+
+/* Inline text link inside a card — lifts + underlines on hover */
+.card-link {
+  font-family: 'Cinzel', serif;
+  color: #c9a227;
+  text-decoration: none;
+  display: inline-block;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.card-link:hover {
+  color: #f0c040;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transform: translateY(-2px);
+}
+
 /* Quote styling */
 blockquote.dnd-quote {
   border-left: 3px solid #8b0000;
@@ -156,6 +207,7 @@ blockquote.dnd-quote {
 .badge-sorcerer   { background: rgba(100,0,150,0.2); border-color: #7c00b8;  color: #d8b4fe; }
 .badge-warlock    { background: rgba(60,0,100,0.2);  border-color: #4c0070;  color: #a78bfa; }
 .badge-monk       { background: rgba(100,70,0,0.2);  border-color: #7c5600;  color: #fcd34d; }
+.badge-dm         { background: rgba(240,192,64,0.15); border-color: #f0c040; color: #f0c040; }
 
 /* Timeline */
 .timeline-line {
@@ -166,6 +218,60 @@ blockquote.dnd-quote {
   width: 1px;
   background: linear-gradient(to bottom, transparent, #c9a227, transparent);
   transform: translateX(-50%);
+}
+
+/* ── Scroll reveal ─────────────────────────────────────────── */
+/* Base: hidden state */
+.reveal,
+.reveal-left,
+.reveal-right,
+.reveal-scale,
+.reveal-blur,
+.reveal-rotate {
+  opacity: 0;
+  transition: opacity 0.65s ease, transform 0.65s ease, filter 0.65s ease;
+}
+
+.reveal        { transform: translateY(40px); }
+.reveal-left   { transform: translateX(-56px); }
+.reveal-right  { transform: translateX(56px); }
+.reveal-scale  { transform: scale(0.86); transition-timing-function: cubic-bezier(0.34, 1.45, 0.64, 1), ease, ease; }
+.reveal-blur   { transform: translateY(24px); filter: blur(6px); }
+.reveal-rotate { transform: translateY(32px) rotate(-2deg); }
+
+/* Visible state */
+.reveal.in,
+.reveal-left.in,
+.reveal-right.in,
+.reveal-scale.in,
+.reveal-blur.in,
+.reveal-rotate.in {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* Stagger helpers */
+.delay-1 { transition-delay: 0.08s !important; }
+.delay-2 { transition-delay: 0.16s !important; }
+.delay-3 { transition-delay: 0.24s !important; }
+.delay-4 { transition-delay: 0.32s !important; }
+.delay-5 { transition-delay: 0.40s !important; }
+
+/* Respect reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal-left, .reveal-right,
+  .reveal-scale, .reveal-blur, .reveal-rotate {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+}
+
+/* Anchor offset — prevents sticky header from obscuring jump targets */
+[id] {
+  scroll-margin-top: 6.5rem;
 }
 
 /* Scrollbar */

@@ -1,18 +1,64 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { storyUpdates } from '../data/story';
+
+// Fire embers — small glowing sparks drifting upward
+const embers = Array.from({ length: 55 }, () => ({
+  x:     Math.random() * 100,
+  delay: Math.random() * 12,
+  dur:   3 + Math.random() * 6,
+  size:  1.5 + Math.random() * 3,
+  driftX: (Math.random() - 0.5) * 80,
+  hue:   Math.random() > 0.7 ? 'lt' : (Math.random() > 0.5 ? 'md' : 'dk'), // lt=bright yellow, md=orange, dk=deep red
+}));
 ---
 
 <Layout title="Story Updates" description="Session-by-session chronicles of the Motley Marauders' adventures.">
 
   <!-- Page header -->
-  <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18;">
-    <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:1rem;">The Campaign Chronicle</p>
-    <h1 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:clamp(2rem,5vw,3.5rem); font-weight:700;" class="text-glow-gold">
+  <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18; position:relative; overflow:hidden;">
+
+    <!-- Library — left side -->
+    <div style="position:absolute; left:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+      <img
+        src="/library.jpg"
+        alt="Library"
+        style="width:100%; height:100%; object-fit:cover; object-position:center top; opacity:0.75; mask-image:linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%); -webkit-mask-image:linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);"
+      />
+    </div>
+
+    <!-- Dungeon — right side -->
+    <div style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+      <img
+        src="/dungeon.jpg"
+        alt="Dungeon"
+        style="width:100%; height:100%; object-fit:cover; object-position:center top; opacity:0.75; mask-image:linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%); -webkit-mask-image:linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);"
+      />
+    </div>
+
+    <!-- Fire embers -->
+    <div class="ember-field" aria-hidden="true">
+      {embers.map(e => (
+        <div
+          class={`ember ember-${e.hue}`}
+          style={`
+            --x: ${e.x.toFixed(1)}%;
+            --delay: ${e.delay.toFixed(2)}s;
+            --dur: ${e.dur.toFixed(2)}s;
+            --size: ${e.size.toFixed(1)}px;
+            --drift: ${e.driftX.toFixed(1)}px;
+          `}
+        ></div>
+      ))}
+    </div>
+
+    <!-- Text -->
+    <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:1rem; position:relative; z-index:1;">The Campaign Chronicle</p>
+    <h1 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:clamp(2rem,5vw,3.5rem); font-weight:700; position:relative; z-index:1;" class="text-glow-gold">
       Story Updates
     </h1>
-    <div class="rune-divider" style="max-width:16rem; margin:1.5rem auto 0;"></div>
-    <p style="color:#c9a96e; font-style:italic; margin-top:1rem; max-width:40rem; margin-left:auto; margin-right:auto;">
+    <div class="rune-divider" style="max-width:16rem; margin:1.5rem auto 0; position:relative; z-index:1;"></div>
+    <p style="color:#c9a96e; font-style:italic; margin-top:1rem; max-width:40rem; margin-left:auto; margin-right:auto; position:relative; z-index:1;">
       A faithful (if occasionally embellished) account of events, as witnessed by those who somehow survived them.
     </p>
   </div>
@@ -20,22 +66,50 @@ import { storyUpdates } from '../data/story';
   <!-- Session list -->
   <div style="max-width:56rem; margin:0 auto; padding:4rem 1rem;">
 
-    <!-- Session count -->
+    <!-- Search bar + results panel -->
+    <div style="margin-bottom:2rem;">
+      <div style="position:relative; max-width:32rem;">
+        <span style="position:absolute; left:0.75rem; top:50%; transform:translateY(-50%); color:#6b5a3e; pointer-events:none; display:flex;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="7"/>
+            <line x1="16.5" y1="16.5" x2="22" y2="22"/>
+          </svg>
+        </span>
+        <input
+          id="story-search"
+          type="search"
+          placeholder="Search sessions, locations, events..."
+          autocomplete="off"
+          style="
+            width:100%;
+            background:#1a1208;
+            border:1px solid #3d2e18;
+            color:#c9a96e;
+            font-family:'IM Fell English',serif;
+            font-size:0.9rem;
+            padding:0.6rem 1rem 0.6rem 2.25rem;
+            outline:none;
+            transition:border-color 0.2s;
+            box-sizing:border-box;
+          "
+        />
+
+        <!-- Results dropdown -->
+        <div id="search-results-panel" class="results-panel" hidden>
+          <div id="results-header" class="results-header"></div>
+          <div id="results-list" class="results-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Session count + quick nav -->
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
       <p style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">
         {storyUpdates.length} Sessions Chronicled
       </p>
       <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
         {storyUpdates.map(s => (
-          <a href={`#session-${s.session}`} style="
-            font-family:'Cinzel',serif;
-            font-size:0.7rem;
-            padding:0.2rem 0.5rem;
-            border:1px solid #3d2e18;
-            color:#c9a96e;
-            text-decoration:none;
-            transition:border-color 0.2s;
-          ">
+          <a href={`#session-${s.session}`} class="site-btn" style="padding:0.25rem 0.65rem; font-size:0.65rem;">
             #{s.session}
           </a>
         ))}
@@ -45,8 +119,8 @@ import { storyUpdates } from '../data/story';
     {storyUpdates.map((session, i) => (
       <article
         id={`session-${session.session}`}
-        class="parchment-card"
-        style="margin-bottom:2.5rem; padding:0; overflow:hidden;"
+        class={`parchment-card reveal-scale`}
+        style={`margin-bottom:2.5rem; padding:0; overflow:hidden; transition-delay:${Math.min(i * 0.04, 0.2)}s;`}
       >
         <!-- Session header bar -->
         <div style="
@@ -60,76 +134,68 @@ import { storyUpdates } from '../data/story';
           gap:0.75rem;
         ">
           <div style="display:flex; align-items:center; gap:1rem;">
-            <span style="
-              font-family:'Cinzel',serif;
-              font-size:2rem;
-              font-weight:900;
-              color:#8b0000;
-              line-height:1;
-              opacity:0.6;
-            ">
+            <span style="font-family:'Cinzel',serif; font-size:2rem; font-weight:900; color:#8b0000; line-height:1; opacity:0.6;">
               {String(session.session).padStart(2, '0')}
             </span>
             <div>
               <h2 style="font-family:'Cinzel',serif; color:#f0c040; font-size:1.15rem; font-weight:700; margin-bottom:0.2rem;">
                 {session.title}
               </h2>
-              <p style="font-size:0.8rem; color:#c9a227; font-family:'Cinzel',serif;">📍 {session.location}</p>
+              <p style="font-size:0.8rem; color:#c9a227; font-family:'Cinzel',serif;">
+                {session.location}
+              </p>
             </div>
           </div>
           {session.date && (
-            <span style="font-size:0.75rem; color:#6b5a3e; font-family:'Cinzel',serif;">{session.date}</span>
+            <span style="font-size:0.85rem; color:#9a8060; font-family:'Cinzel',serif; font-weight:500;">{session.date}</span>
           )}
         </div>
 
         <!-- Session body -->
-        <div style="padding:1.5rem;">
-          <!-- Summary -->
-          <p style="color:#c9a96e; line-height:1.8; margin-bottom:1.25rem;">{session.summary}</p>
+        <div style="padding:1.5rem 1.5rem 1rem;">
 
-          <!-- Highlights -->
-          <div style="margin-bottom:1.25rem;">
-            <h3 style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:0.75rem;">
-              ✦ Session Highlights
-            </h3>
-            <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.4rem;">
-              {session.highlights.map(h => (
-                <li style="display:flex; gap:0.75rem; align-items:flex-start; font-size:0.875rem; color:#c9a96e;">
-                  <span style="color:#c9a227; flex-shrink:0;">›</span>
-                  {h}
-                </li>
-              ))}
-            </ul>
+          <!-- Summary — always visible -->
+          <p class="session-summary" style="color:#c9a96e; line-height:1.8; margin-bottom:1rem;">{session.summary}</p>
+
+          <!-- Expandable detail -->
+          <div class="session-detail" id={`detail-${session.session}`}>
+
+            <!-- Highlights -->
+            <div style="margin-bottom:1.25rem;">
+              <h3 style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:0.75rem;">
+                ✦ Session Highlights
+              </h3>
+              <ul class="session-highlights" style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.4rem;">
+                {session.highlights.map(h => (
+                  <li style="display:flex; gap:0.75rem; align-items:flex-start; font-size:0.875rem; color:#c9a96e;">
+                    <span style="color:#c9a227; flex-shrink:0;">›</span>
+                    <span>{h}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <!-- Cliffhanger -->
+            {session.cliffhanger && (
+              <div style="border-left:3px solid #8b0000; background:linear-gradient(to right, rgba(139,0,0,0.06), transparent); padding:0.75rem 1rem; margin-bottom:0.5rem;">
+                <span style="font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; color:#c0392b; display:block; margin-bottom:0.25rem; font-weight:600;">⚠ To Be Continued...</span>
+                <p class="session-cliffhanger" style="font-style:italic; color:#f0a090; font-size:0.95rem; font-weight:500;">"{session.cliffhanger}"</p>
+              </div>
+            )}
           </div>
 
-          <!-- Cliffhanger -->
-          {session.cliffhanger && (
-            <div style="
-              border-left:3px solid #8b0000;
-              background:linear-gradient(to right, rgba(139,0,0,0.06), transparent);
-              padding:0.75rem 1rem;
-            ">
-              <span style="
-                font-family:'Cinzel',serif;
-                font-size:0.7rem;
-                letter-spacing:0.1em;
-                text-transform:uppercase;
-                color:#8b0000;
-                display:block;
-                margin-bottom:0.25rem;
-              ">⚠ To Be Continued...</span>
-              <p style="font-style:italic; color:#ff9999; font-size:0.9rem;">"{session.cliffhanger}"</p>
-            </div>
-          )}
+          <!-- Read More button -->
+          <button class="read-more-btn" data-target={`detail-${session.session}`} aria-expanded="false">
+            Read More <span class="btn-arrow">›</span>
+          </button>
         </div>
       </article>
     ))}
 
     <!-- Coming soon -->
-    <div class="parchment-card" style="padding:2rem; text-align:center; border-style:dashed;">
-      <p style="font-size:2rem; margin-bottom:1rem; opacity:0.4;">📜</p>
+    <div class="parchment-card reveal-blur" style="padding:2rem; text-align:center; border-style:dashed;">
       <h3 style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:1rem; margin-bottom:0.5rem;">The Story Continues...</h3>
-      <p style="color:#3d2e18; font-size:0.875rem; font-style:italic;">
+      <p style="color:#6b5a3e; font-size:0.875rem; font-style:italic;">
         Session {storyUpdates.length + 1} is yet to be written. The dice await.
       </p>
     </div>
@@ -137,3 +203,494 @@ import { storyUpdates } from '../data/story';
   </div>
 
 </Layout>
+
+<style>
+/* ── Fire embers ───────────────────────────── */
+.ember-field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ember {
+  position: absolute;
+  left: var(--x);
+  bottom: -6px;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  opacity: 0;
+  animation:
+    emberRise  var(--dur) ease-out var(--delay) infinite,
+    emberGlow  calc(var(--dur) * 0.35) ease-in-out var(--delay) infinite alternate;
+}
+
+/* bright yellow-white core sparks */
+.ember-lt {
+  background: radial-gradient(circle, #fff8d0 0%, #ffe066 50%, transparent 80%);
+  box-shadow: 0 0 calc(var(--size) * 2) calc(var(--size) * 0.8) rgba(255, 210, 50, 0.8);
+}
+
+/* orange mid sparks */
+.ember-md {
+  background: radial-gradient(circle, #ffcc55 0%, #ff8c00 55%, transparent 80%);
+  box-shadow: 0 0 calc(var(--size) * 2) calc(var(--size) * 0.6) rgba(255, 100, 0, 0.65);
+}
+
+/* deep red embers */
+.ember-dk {
+  background: radial-gradient(circle, #ff6030 0%, #cc2200 60%, transparent 80%);
+  box-shadow: 0 0 calc(var(--size) * 1.5) calc(var(--size) * 0.4) rgba(180, 20, 0, 0.5);
+}
+
+@keyframes emberRise {
+  0%   { opacity: 0;   transform: translate(0, 0)                        scale(1);    }
+  8%   { opacity: 1; }
+  60%  { opacity: 0.8; transform: translate(calc(var(--drift) * 0.6), -55vh) scale(0.7); }
+  90%  { opacity: 0.1; transform: translate(var(--drift), -90vh)          scale(0.3); }
+  100% { opacity: 0;   transform: translate(var(--drift), -100vh)         scale(0);   }
+}
+
+@keyframes emberGlow {
+  0%   { filter: brightness(1);   }
+  100% { filter: brightness(1.8); }
+}
+
+/* ── Read More ─────────────────────────────── */
+.session-detail {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+}
+.session-detail.open {
+  max-height: 800px;
+  opacity: 1;
+}
+
+.read-more-btn {
+  /* Inherits .site-btn from global.css — override only what differs */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  background: transparent;
+  border: 1px solid #c9a227;
+  color: #c9a227;
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.5rem 1.2rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.34,1.45,0.64,1), box-shadow 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+.read-more-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%);
+  transform: translateX(-100%);
+  transition: transform 0.45s ease;
+}
+.read-more-btn:hover::before { transform: translateX(100%); }
+.read-more-btn:hover {
+  color: #f0c040;
+  border-color: #f0c040;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 18px rgba(201,162,39,0.28), 0 4px 14px rgba(0,0,0,0.3);
+}
+.btn-arrow {
+  display: inline-block;
+  transition: transform 0.3s ease;
+  font-size: 1rem;
+  line-height: 1;
+}
+.read-more-btn[aria-expanded="true"] .btn-arrow {
+  transform: rotate(90deg);
+}
+
+/* ── Search results panel ───────────────────── */
+.results-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #120e08;
+  border: 1px solid #c9a227;
+  z-index: 100;
+  max-height: 420px;
+  overflow-y: auto;
+  text-align: left;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+}
+
+.results-header {
+  padding: 0.5rem 1rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9a8060;
+  font-weight: 600;
+  border-bottom: 2px solid #3d2e18;
+  background: #0d0a07;
+}
+
+.results-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* One card per session */
+.result-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 2px solid #2a1f0f;
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.result-item:last-child { border-bottom: none; }
+.result-item:hover { background: rgba(201,162,39,0.07); }
+
+.result-num {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: rgba(139,0,0,0.5);
+  line-height: 1;
+  float: left;
+  margin-right: 0.75rem;
+  margin-top: 0.1rem;
+}
+
+.result-body {
+  overflow: hidden;
+}
+
+.result-session {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #f0c040;
+  margin-bottom: 0.4rem;
+  line-height: 1.3;
+}
+
+.result-hits {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.result-hit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.result-section-label {
+  display: inline-block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #c9a227;
+  border: 1px solid #3d2e18;
+  padding: 0.05rem 0.4rem;
+  margin-right: 0.4rem;
+}
+
+.result-snippet {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.8rem;
+  color: #7a6045;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.result-fuzzy-note {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  color: #4a3820;
+  font-style: italic;
+  margin-top: 0.15rem;
+}
+
+/* Highlighted match — in results panel */
+.result-hl {
+  background: rgba(201,162,39,0.25);
+  color: #f0c040;
+  font-style: normal;
+}
+
+/* Highlighted match — in article text */
+mark.search-hl {
+  background: rgba(140, 90, 5, 0.55);
+  color: #c9a227;
+  border-radius: 2px;
+  padding: 0 2px;
+  outline: 1px solid rgba(201,162,39,0.3);
+}
+</style>
+
+<script>
+// ── Read More ──────────────────────────────────────────────────
+document.querySelectorAll<HTMLButtonElement>('.read-more-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const detail = document.getElementById(btn.dataset.target!)!;
+    const isOpen = btn.getAttribute('aria-expanded') === 'true';
+    detail.classList.toggle('open', !isOpen);
+    btn.setAttribute('aria-expanded', String(!isOpen));
+    btn.childNodes[0].textContent = isOpen ? 'Read More ' : 'Read Less ';
+  });
+});
+
+// ── Search ─────────────────────────────────────────────────────
+const searchInput  = document.getElementById('story-search') as HTMLInputElement;
+const panel        = document.getElementById('search-results-panel') as HTMLElement;
+const panelHeader  = document.getElementById('results-header')!;
+const panelList    = document.getElementById('results-list')!;
+const articles     = Array.from(document.querySelectorAll<HTMLElement>('article[id^="session-"]'));
+
+searchInput.addEventListener('focus', () => searchInput.style.borderColor = '#c9a227');
+searchInput.addEventListener('blur',  () => searchInput.style.borderColor = '#3d2e18');
+
+document.addEventListener('click', e => {
+  if (!searchInput.parentElement?.contains(e.target as Node)) panel.hidden = true;
+});
+
+searchInput.addEventListener('input', runSearch);
+
+// ── Fuzzy helpers ───────────────────────────────────────────────
+
+function levenshtein(a: string, b: string): number {
+  if (a === b) return 0;
+  if (!a.length) return b.length;
+  if (!b.length) return a.length;
+  const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = i;
+    for (let j = 1; j <= b.length; j++) {
+      const curr = a[i - 1] === b[j - 1] ? row[j - 1] : 1 + Math.min(row[j - 1], row[j], prev);
+      row[j - 1] = prev;
+      prev = curr;
+    }
+    row[b.length] = prev;
+  }
+  return row[b.length];
+}
+
+// Returns {match: boolean, fuzzy: boolean, idx: number}
+function findInText(text: string, query: string): { match: boolean; fuzzy: boolean; idx: number } {
+  const t = text.toLowerCase();
+  const q = query.toLowerCase();
+
+  // Exact substring match
+  const exact = t.indexOf(q);
+  if (exact !== -1) return { match: true, fuzzy: false, idx: exact };
+
+  // Fuzzy: check each word in text against query
+  const threshold = q.length <= 3 ? 0 : q.length <= 5 ? 1 : 2;
+  if (threshold === 0) return { match: false, fuzzy: false, idx: -1 };
+
+  const words = t.split(/\W+/);
+  let charOffset = 0;
+  for (const word of words) {
+    if (Math.abs(word.length - q.length) <= threshold && levenshtein(q, word) <= threshold) {
+      return { match: true, fuzzy: true, idx: charOffset };
+    }
+    charOffset += word.length + 1;
+  }
+  return { match: false, fuzzy: false, idx: -1 };
+}
+
+function getSnippet(text: string, query: string, ctx = 70): { snippet: string; fuzzy: boolean } | null {
+  const { match, fuzzy, idx } = findInText(text, query);
+  if (!match) return null;
+  const start = Math.max(0, idx - ctx);
+  const end   = Math.min(text.length, idx + query.length + ctx);
+  let s = text.slice(start, end).replace(/\s+/g, ' ').trim();
+  if (start > 0) s = '…' + s;
+  if (end < text.length) s += '…';
+  return { snippet: s, fuzzy };
+}
+
+// ── Main search ─────────────────────────────────────────────────
+
+function runSearch() {
+  const raw = searchInput.value.trim();
+  clearHighlights();
+
+  if (!raw) {
+    panel.hidden = true;
+    return;
+  }
+
+  type Hit = { label: string; snippet: string; fuzzy: boolean };
+  const results: { article: HTMLElement; num: string; title: string; hits: Hit[] }[] = [];
+
+  articles.forEach(article => {
+    const titleEl = article.querySelector('h2');
+    const num     = article.id.replace('session-', '').padStart(2, '0');
+    const title   = titleEl?.textContent?.trim() ?? '';
+    const hits: Hit[] = [];
+    const seen = new Set<string>();
+
+    const tryAdd = (text: string, label: string) => {
+      const r = getSnippet(text, raw);
+      if (r && !seen.has(label)) {
+        seen.add(label);
+        hits.push({ label, snippet: r.snippet, fuzzy: r.fuzzy });
+      }
+    };
+
+    tryAdd(article.querySelector('.session-summary')?.textContent ?? '', 'Summary');
+
+    const hlTexts: string[] = [];
+    article.querySelectorAll('.session-highlights li span:last-child').forEach(li => {
+      hlTexts.push(li.textContent ?? '');
+    });
+    if (hlTexts.length) tryAdd(hlTexts.join(' '), 'Highlights');
+
+    const cliff = article.querySelector('.session-cliffhanger')?.textContent ?? '';
+    if (cliff) tryAdd(cliff, 'Cliffhanger');
+
+    // Also check location (title area)
+    tryAdd(title, 'Title');
+
+    if (hits.length) results.push({ article, num, title, hits });
+  });
+
+  panelList.innerHTML = '';
+
+  if (!results.length) {
+    panelHeader.textContent = `No results for "${raw}"`;
+    panel.hidden = false;
+    return;
+  }
+
+  const fuzzyOnly = results.every(r => r.hits.every(h => h.fuzzy));
+  panelHeader.textContent = `${results.length} session${results.length === 1 ? '' : 's'} found${fuzzyOnly ? ' (approximate match)' : ''}`;
+
+  results.forEach(r => {
+    const btn = document.createElement('button');
+    btn.className = 'result-item';
+
+    // Session number badge
+    const numEl = document.createElement('div');
+    numEl.className = 'result-num';
+    numEl.textContent = r.num;
+
+    // Body
+    const body = document.createElement('div');
+    body.className = 'result-body';
+
+    const titleEl = document.createElement('div');
+    titleEl.className = 'result-session';
+    titleEl.textContent = r.title;
+    body.appendChild(titleEl);
+
+    const hitsWrap = document.createElement('div');
+    hitsWrap.className = 'result-hits';
+
+    r.hits.forEach(hit => {
+      const hitEl = document.createElement('div');
+      hitEl.className = 'result-hit';
+
+      const tag = document.createElement('span');
+      tag.className = 'result-section-label';
+      tag.textContent = hit.label;
+
+      const snip = document.createElement('div');
+      snip.className = 'result-snippet';
+      snip.textContent = hit.snippet;
+
+      hitEl.append(tag, snip);
+
+      if (hit.fuzzy) {
+        const note = document.createElement('div');
+        note.className = 'result-fuzzy-note';
+        note.textContent = '~ approximate match';
+        hitEl.appendChild(note);
+      }
+
+      hitsWrap.appendChild(hitEl);
+    });
+
+    body.appendChild(hitsWrap);
+    btn.append(numEl, body);
+
+    btn.addEventListener('click', () => {
+      panel.hidden = true;
+      jumpToArticle(r.article, raw, r.hits[0].label);
+    });
+
+    panelList.appendChild(btn);
+  });
+
+  panel.hidden = false;
+}
+
+// ── Article interaction ─────────────────────────────────────────
+
+function jumpToArticle(article: HTMLElement, query: string, hitLabel: string) {
+  if (hitLabel !== 'Summary' && hitLabel !== 'Title') {
+    const detailId = article.querySelector('.session-detail')?.id;
+    const detail   = detailId ? document.getElementById(detailId) : null;
+    const btn      = article.querySelector<HTMLButtonElement>('.read-more-btn');
+    if (detail && !detail.classList.contains('open')) {
+      detail.classList.add('open');
+      btn?.setAttribute('aria-expanded', 'true');
+      if (btn) btn.childNodes[0].textContent = 'Read Less ';
+    }
+  }
+  article.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => highlightInArticle(article, query), 350);
+}
+
+function highlightInArticle(root: HTMLElement, query: string) {
+  const re = new RegExp(escapeRe(query), 'gi');
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes: Text[] = [];
+  let n: Node | null;
+  while ((n = walker.nextNode())) nodes.push(n as Text);
+  nodes.forEach(tn => {
+    if (!re.test(tn.textContent ?? '')) return;
+    re.lastIndex = 0;
+    const frag = document.createDocumentFragment();
+    let last = 0, m: RegExpExecArray | null;
+    const t = tn.textContent ?? '';
+    while ((m = re.exec(t)) !== null) {
+      frag.appendChild(document.createTextNode(t.slice(last, m.index)));
+      const mark = document.createElement('mark');
+      mark.className = 'search-hl';
+      mark.textContent = m[0];
+      frag.appendChild(mark);
+      last = m.index + m[0].length;
+    }
+    frag.appendChild(document.createTextNode(t.slice(last)));
+    tn.parentNode?.replaceChild(frag, tn);
+  });
+}
+
+function clearHighlights() {
+  document.querySelectorAll('mark.search-hl').forEach(mark => {
+    mark.replaceWith(document.createTextNode(mark.textContent ?? ''));
+  });
+  articles.forEach(a => a.normalize());
+}
+
+function escapeRe(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+</script>

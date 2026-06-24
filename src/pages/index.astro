@@ -4,7 +4,7 @@ import { characters } from '../data/characters';
 import { storyUpdates, quotes } from '../data/story';
 
 const latestSession = storyUpdates[storyUpdates.length - 1];
-const featuredQuote = quotes[5]; // "We are the Motley Marauders!"
+// quotes imported for rotating hero display
 ---
 
 <Layout title="Home">
@@ -85,7 +85,7 @@ const featuredQuote = quotes[5]; // "We are the Motley Marauders!"
       </div>
 
       <div class="rune-divider" style="max-width:12rem; margin:0 auto 2rem; opacity:0; animation:fadeUp 0.8s ease 2s forwards;">
-        <span style="color:#c9a227;">⚔</span>
+        <span style="color:#c9a227; font-size:1.8rem; line-height:1;">⚔</span>
       </div>
 
       <p style="
@@ -101,42 +101,52 @@ const featuredQuote = quotes[5]; // "We are the Motley Marauders!"
         Twelve unlikely souls. Countless terrible plans. One epic adventure — still in progress.
       </p>
 
-      <!-- Featured quote -->
-      <div class="parchment-card corner-ornament" style="max-width:36rem; margin:0 auto 3rem; padding:1.5rem;">
-        <blockquote class="dnd-quote">
-          <p style="margin-bottom:0.75rem; font-size:1.05rem;">"{featuredQuote.text}"</p>
-          <footer style="font-size:0.875rem; color:#c9a227; font-family:'Cinzel',serif; font-style:normal;">
-            — {featuredQuote.speaker}
-          </footer>
+      <!-- Rotating quote -->
+      <div id="rotating-quote-wrap" class="parchment-card corner-ornament" style="max-width:48rem; margin:0 auto 3rem; padding:2rem; opacity:0; animation:fadeUp 0.9s ease 2.4s forwards; border-top:3px solid #c9a227; text-align:center;">
+        <p style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:1.5rem;">✦ Quote of the Campaign ✦</p>
+        <blockquote id="rq-blockquote">
+          <p id="rq-text" style="font-family:'IM Fell English',serif; font-style:italic; color:#e8d5b0; font-size:1.4rem; line-height:1.6; margin-bottom:1rem;"></p>
+          <footer id="rq-speaker" style="font-family:'Cinzel',serif; font-size:0.875rem; color:#c9a227; font-style:normal;"></footer>
         </blockquote>
-        <p style="font-size:0.75rem; margin-top:0.75rem; font-style:italic; color:#6b5a3e;">{featuredQuote.context}</p>
+        <p id="rq-context" style="font-size:0.9rem; margin-top:1rem; font-style:italic; color:#a08860; font-weight:500; line-height:1.5;"></p>
       </div>
 
+      <script define:vars={{ rqQuotes: quotes.map(q => ({ text: q.text, speaker: q.speaker, context: q.context || '' })) }}>
+      (function () {
+        const wrap    = document.getElementById('rotating-quote-wrap');
+        const text    = document.getElementById('rq-text');
+        const speaker = document.getElementById('rq-speaker');
+        const context = document.getElementById('rq-context');
+        const FADE    = 1400;
+        const HOLD    = 5500;
+        let idx = 0;
+
+        function setQuote(q) {
+          text.textContent    = '\u201C' + q.text + '\u201D';
+          speaker.textContent = '\u2014 ' + q.speaker;
+          context.textContent = q.context;
+        }
+
+        function cycle() {
+          wrap.style.opacity = '0';
+          setTimeout(() => {
+            idx = (idx + 1) % rqQuotes.length;
+            setQuote(rqQuotes[idx]);
+            wrap.style.opacity = '1';
+          }, FADE);
+        }
+
+        setQuote(rqQuotes[0]);
+        // Add transition after hero animation completes so they don't conflict
+        setTimeout(() => { wrap.style.transition = 'opacity 1.4s ease'; }, 3500);
+        setInterval(cycle, HOLD + FADE);
+      })();
+      </script>
+
       <!-- CTAs -->
-      <div style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:center;">
-        <a href="/story" style="
-          font-family:'Cinzel',serif;
-          font-size:0.875rem;
-          letter-spacing:0.12em;
-          text-transform:uppercase;
-          padding:0.75rem 1.5rem;
-          background:linear-gradient(135deg,#8b0000,#c0392b);
-          color:#f0c040;
-          border:1px solid #c9a227;
-          text-decoration:none;
-          transition:box-shadow 0.2s;
-        ">Read the Chronicle</a>
-        <a href="/characters" style="
-          font-family:'Cinzel',serif;
-          font-size:0.875rem;
-          letter-spacing:0.12em;
-          text-transform:uppercase;
-          padding:0.75rem 1.5rem;
-          background:transparent;
-          color:#c9a227;
-          border:1px solid #3d2e18;
-          text-decoration:none;
-        ">Meet the Party</a>
+      <div style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; opacity:0; animation:fadeUp 0.8s ease 2.8s forwards;">
+        <a href="/story" class="hero-btn hero-btn-primary">Read the Chronicle</a>
+        <a href="/characters" class="hero-btn hero-btn-secondary">Meet the Party</a>
       </div>
     </div>
 
@@ -149,7 +159,7 @@ const featuredQuote = quotes[5]; // "We are the Motley Marauders!"
   </section>
 
   <!-- Latest session -->
-  <section style="padding:5rem 1rem;">
+  <section class="reveal" style="padding:5rem 1rem;">
     <div style="max-width:72rem; margin:0 auto;">
       <div style="text-align:center; margin-bottom:3rem;">
         <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.3em; text-transform:uppercase; margin-bottom:0.75rem;">Latest Chapter</p>
@@ -157,81 +167,94 @@ const featuredQuote = quotes[5]; // "We are the Motley Marauders!"
       </div>
 
       <div class="parchment-card corner-ornament" style="padding:2rem; max-width:48rem; margin:0 auto;">
-        <div style="display:flex; align-items:flex-start; gap:1rem; margin-bottom:1rem;">
-          <span style="font-size:2rem;">📜</span>
-          <div>
-            <h3 style="font-family:'Cinzel',serif; color:#f0c040; font-size:1.25rem; font-weight:700; margin-bottom:0.25rem;">{latestSession.title}</h3>
-            <p style="color:#c9a227; font-family:'Cinzel',serif; font-size:0.875rem;">📍 {latestSession.location}</p>
-          </div>
+        <div style="margin-bottom:1rem;">
+          <h3 style="font-family:'Cinzel',serif; color:#f0c040; font-size:1.25rem; font-weight:700; margin-bottom:0.25rem;">{latestSession.title}</h3>
+          <p style="color:#c9a227; font-family:'Cinzel',serif; font-size:0.875rem;">{latestSession.location}</p>
         </div>
 
         <p style="color:#c9a96e; line-height:1.75; margin-bottom:1.5rem;">{latestSession.summary}</p>
 
         {latestSession.cliffhanger && (
-          <div style="border-left:2px solid #8b0000; padding-left:1rem; font-style:italic; color:#ff9999;">
-            <span style="font-family:'Cinzel',serif; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.08em; color:#8b0000; font-style:normal; display:block; margin-bottom:0.25rem;">⚠ Cliffhanger</span>
+          <div style="border-left:2px solid #c0392b; padding-left:1rem; font-style:italic; color:#f0a090; font-weight:500;">
+            <span style="font-family:'Cinzel',serif; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.08em; color:#c0392b; font-style:normal; display:block; margin-bottom:0.25rem; font-weight:600;">⚠ Cliffhanger</span>
             "{latestSession.cliffhanger}"
           </div>
         )}
 
         <div style="margin-top:1.5rem; text-align:right;">
-          <a href="/story" style="font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:#c9a227; text-decoration:none;">All Sessions →</a>
+          <a href="/story" class="card-link" style="font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase;">All Sessions →</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Party snapshot -->
-  <section style="padding:5rem 1rem; background:linear-gradient(to bottom, transparent, rgba(26,18,8,0.4), transparent);">
-    <div style="max-width:72rem; margin:0 auto;">
-      <div style="text-align:center; margin-bottom:3rem;">
-        <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.3em; text-transform:uppercase; margin-bottom:0.75rem;">The Adventuring Party</p>
-        <h2 style="font-family:'Cinzel',serif; color:#e8d5b0; font-size:1.875rem; font-weight:700;">The Marauders</h2>
+  <!-- Party snapshot carousel -->
+  <section class="reveal" style="padding:5rem 0; background:linear-gradient(to bottom, transparent, rgba(26,18,8,0.4), transparent);">
+    <div style="text-align:center; margin-bottom:3rem; padding:0 1rem;">
+      <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.3em; text-transform:uppercase; margin-bottom:0.75rem;">The Adventuring Party</p>
+      <h2 style="font-family:'Cinzel',serif; color:#e8d5b0; font-size:1.875rem; font-weight:700;">The Marauders</h2>
+    </div>
+
+    <div class="carousel-outer">
+      <!-- Prev arrow -->
+      <button class="carousel-arrow carousel-arrow-prev" id="carousel-prev" aria-label="Previous">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+
+      <!-- Scrollable viewport -->
+      <div class="carousel-mask">
+        <div class="carousel-viewport" id="carousel-viewport">
+          <div class="carousel-track">
+            {characters.map(char => (
+              <a
+                href={`/characters#${char.name.toLowerCase().replace(/[\s()\/]/g,'-').replace(/-+/g,'-')}`}
+                class="carousel-card parchment-card"
+              >
+                {char.image ? (
+                  <div style="height:260px; overflow:hidden; position:relative;">
+                    <img
+                      src={char.image}
+                      alt={char.name}
+                      style="width:100%; height:100%; object-fit:cover; object-position:top; filter:sepia(15%) contrast(1.05);"
+                    />
+                    <div style="position:absolute; inset:0; background:linear-gradient(to top, #1a1208 0%, transparent 55%);"></div>
+                  </div>
+                ) : (
+                  <div style="height:260px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#1a1208,#231a0e); font-size:3.5rem;">
+                    {char.icon}
+                  </div>
+                )}
+                <div style="padding:1rem; text-align:center;">
+                  <h3 style="font-family:'Cinzel',serif; color:#e8d5b0; font-size:0.85rem; font-weight:700; margin-bottom:0.4rem; line-height:1.2;">
+                    {char.name.split(' ')[0].split('(')[0].trim()}
+                  </h3>
+                  <span class={`badge-${char.classSlug}`} style="font-family:'Cinzel',serif; font-size:0.62rem; padding:0.15rem 0.5rem; border:1px solid; border-radius:9999px; display:inline-block;">
+                    {char.class.split('/')[0].trim()}
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:1rem; margin-bottom:2rem;">
-        {characters.map(char => (
-          <a href={`/characters#${char.name.toLowerCase().replace(/[\s()\/]/g,'-').replace(/-+/g,'-')}`}
-            class="parchment-card"
-            style="text-decoration:none; display:block; overflow:hidden; transition:border-color 0.2s;"
-          >
-            {char.image ? (
-              <div style="height:140px; overflow:hidden; position:relative;">
-                <img
-                  src={char.image}
-                  alt={char.name}
-                  style="width:100%; height:100%; object-fit:cover; object-position:top; filter:sepia(15%) contrast(1.05);"
-                />
-                <div style="position:absolute; inset:0; background:linear-gradient(to top, #1a1208 0%, transparent 60%);"></div>
-              </div>
-            ) : (
-              <div style="height:140px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#1a1208,#231a0e); font-size:3rem;">
-                {char.icon}
-              </div>
-            )}
-            <div style="padding:0.6rem; text-align:center;">
-              <h3 style="font-family:'Cinzel',serif; color:#e8d5b0; font-size:0.8rem; font-weight:700; margin-bottom:0.3rem; line-height:1.2;">
-                {char.name.split(' ')[0].split('(')[0].trim()}
-              </h3>
-              <span class={`badge-${char.classSlug}`} style="font-family:'Cinzel',serif; font-size:0.6rem; padding:0.15rem 0.4rem; border:1px solid; border-radius:9999px; display:inline-block;">
-                {char.class.split('/')[0].trim()}
-              </span>
-              {char.conditions?.length && (
-                <div style="margin-top:0.3rem; font-size:0.6rem; color:#f87171; font-family:'Cinzel',serif;">⚠ {char.conditions[0]}</div>
-              )}
-            </div>
-          </a>
-        ))}
-      </div>
+      <!-- Next arrow -->
+      <button class="carousel-arrow carousel-arrow-next" id="carousel-next" aria-label="Next">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+    </div>
 
-      <div style="text-align:center;">
-        <a href="/characters" style="font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:#c9a227; text-decoration:none;">View Full Bios →</a>
-      </div>
+    <div style="text-align:center; margin-top:2.5rem; padding:0 1rem;">
+      <a href="/characters" class="site-btn">View Full Bios</a>
     </div>
   </section>
 
   <!-- Quote reel -->
-  <section style="padding:5rem 1rem;">
+  <section class="reveal" style="padding:5rem 1rem;">
     <div style="max-width:56rem; margin:0 auto;">
       <div style="text-align:center; margin-bottom:3rem;">
         <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.3em; text-transform:uppercase; margin-bottom:0.75rem;">Words of Wisdom (Debatable)</p>
@@ -245,17 +268,161 @@ const featuredQuote = quotes[5]; // "We are the Motley Marauders!"
               <p>"{quote.text}"</p>
             </blockquote>
             <p style="font-family:'Cinzel',serif; font-size:0.75rem; color:#c9a227;">— {quote.speaker}</p>
-            <p style="font-size:0.75rem; margin-top:0.25rem; font-style:italic; color:#6b5a3e;">{quote.context}</p>
+            <p style="font-size:0.875rem; margin-top:0.25rem; font-style:italic; color:#a08860; font-weight:500;">{quote.context}</p>
           </div>
         ))}
       </div>
 
       <div style="text-align:center; margin-top:2rem;">
-        <a href="/quotes" style="font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:#c9a227; text-decoration:none;">All Quotes →</a>
+        <a href="/quotes" class="site-btn">All Quotes</a>
       </div>
     </div>
   </section>
 
+<script is:inline>
+(function () {
+  const viewport = document.getElementById('carousel-viewport');
+  const prev     = document.getElementById('carousel-prev');
+  const next     = document.getElementById('carousel-next');
+  if (!viewport || !prev || !next) return;
+
+  const track = viewport.querySelector('.carousel-track');
+  if (!track) return;
+
+  // ── Clone setup ──────────────────────────────────────────
+  const originals = Array.from(track.querySelectorAll('.carousel-card'));
+  const n = originals.length;
+
+  const makeSet = () => {
+    const frag = document.createDocumentFragment();
+    originals.forEach(card => {
+      const c = card.cloneNode(true);
+      c.setAttribute('aria-hidden', 'true');
+      frag.appendChild(c);
+    });
+    return frag;
+  };
+
+  // Build: [before][originals][after]
+  track.appendChild(makeSet());
+  track.insertBefore(makeSet(), track.firstChild);
+
+  // ── Measurement ──────────────────────────────────────────
+  const CARD_W  = () => (track.children[0]?.offsetWidth ?? 230) + 16;
+  const setW    = () => n * CARD_W();
+
+  // ── State ─────────────────────────────────────────────────
+  // offset = how far left the track has been translated (px)
+  // starts at setW so we're looking at the originals
+  let offset = setW();
+
+  const setTransform = (px, animated) => {
+    track.style.transition = animated
+      ? 'transform 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+      : 'none';
+    track.style.transform = `translateX(${-px}px)`;
+    offset = px;
+  };
+
+  setTransform(offset, false);
+
+  // After each animated step, silently normalise back into the originals zone
+  const normalise = () => {
+    const s = setW();
+    let o = offset;
+    // wrap into [s, 2s)
+    while (o >= 2 * s) o -= s;
+    while (o < s)      o += s;
+    if (o !== offset) setTransform(o, false);
+  };
+
+  // ── Arrow buttons ─────────────────────────────────────────
+  let busy = false;
+
+  const step = (dir) => {
+    if (busy) return;
+    busy = true;
+    setTransform(offset + dir * CARD_W(), true);
+
+    // Wait for transition then normalise + unlock
+    track.addEventListener('transitionend', function onEnd() {
+      track.removeEventListener('transitionend', onEnd);
+      normalise();
+      busy = false;
+    }, { once: true });
+  };
+
+  prev.addEventListener('click', () => step(-1));
+  next.addEventListener('click', () => step(1));
+  prev.disabled = false;
+  next.disabled = false;
+
+  // ── Keyboard ──────────────────────────────────────────────
+  viewport.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); step(-1); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
+  });
+
+  // ── Drag (mouse + touch) ──────────────────────────────────
+  let dragStartX   = null;
+  let dragStartOff = 0;
+  let dragged      = false;
+
+  const onDragStart = (clientX) => {
+    if (busy) return;
+    dragStartX   = clientX;
+    dragStartOff = offset;
+    dragged      = false;
+    track.style.transition = 'none';
+    viewport.classList.add('grabbing');
+  };
+
+  const onDragMove = (clientX) => {
+    if (dragStartX === null) return;
+    const delta = dragStartX - clientX;
+    if (Math.abs(delta) > 4) dragged = true;
+    track.style.transform = `translateX(${-(dragStartOff + delta)}px)`;
+    offset = dragStartOff + delta;
+  };
+
+  const onDragEnd = () => {
+    if (dragStartX === null) return;
+    dragStartX = null;
+    viewport.classList.remove('grabbing');
+
+    // Snap to nearest card
+    const cw = CARD_W();
+    const snapped = Math.round(offset / cw) * cw;
+    setTransform(snapped, true);
+    track.addEventListener('transitionend', function onEnd() {
+      track.removeEventListener('transitionend', onEnd);
+      normalise();
+    }, { once: true });
+  };
+
+  viewport.addEventListener('mousedown',  (e) => onDragStart(e.clientX));
+  window .addEventListener('mousemove',   (e) => onDragMove(e.clientX));
+  window .addEventListener('mouseup',     ()  => onDragEnd());
+  viewport.addEventListener('touchstart', (e) => onDragStart(e.touches[0].clientX), { passive: true });
+  viewport.addEventListener('touchmove',  (e) => onDragMove(e.touches[0].clientX),  { passive: true });
+  viewport.addEventListener('touchend',   ()  => onDragEnd());
+
+  // Prevent card link navigation while dragging
+  viewport.addEventListener('click', (e) => {
+    if (dragged) e.preventDefault();
+  });
+
+  // ── Wheel → step ──────────────────────────────────────────
+  let wheelTimer;
+  viewport.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(() => {
+      step(e.deltaX > 0 || e.deltaY > 0 ? 1 : -1);
+    }, 50);
+  }, { passive: false });
+})();
+</script>
 </Layout>
 
 <style>
@@ -354,5 +521,136 @@ const featuredQuote = quotes[5]; // "We are the Motley Marauders!"
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ── Party carousel ─────────────────────────────────────── */
+.carousel-outer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 3.5rem;
+}
+
+.carousel-mask {
+  overflow: hidden;
+  flex: 1;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+}
+
+.carousel-viewport {
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.carousel-viewport.grabbing { cursor: grabbing; }
+
+.carousel-track {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem 0.5rem;
+  width: max-content;
+  will-change: transform;
+}
+
+.carousel-card {
+  width: 230px;
+  flex-shrink: 0;
+  text-decoration: none;
+  display: block;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.carousel-card:hover {
+  transform: translateY(-5px);
+  border-color: #c9a227;
+}
+
+.carousel-arrow {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: rgba(26,18,8,0.9);
+  border: 1px solid #3d2e18;
+  color: #c9a227;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  z-index: 2;
+}
+.carousel-arrow:hover {
+  border-color: #c9a227;
+  color: #f0c040;
+  background: rgba(61,46,24,0.6);
+}
+.carousel-arrow:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+/* ── Hero buttons ───────────────────────────────────────── */
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0.75rem 1.75rem;
+  border-radius: 9999px;
+  border: 1px solid;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.34,1.45,0.64,1), box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+/* Shimmer sweep on hover */
+.hero-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.14) 50%, transparent 60%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+.hero-btn:hover::before {
+  transform: translateX(100%);
+}
+
+.hero-btn:hover {
+  transform: translateY(-3px) scale(1.04);
+}
+
+.hero-btn-primary {
+  background: linear-gradient(135deg, #8b0000, #5a0000);
+  border-color: #c9a227;
+  color: #f0c040;
+  box-shadow: 0 0 18px rgba(139,0,0,0.35), 0 0 6px rgba(201,162,39,0.25);
+}
+.hero-btn-primary:hover {
+  box-shadow: 0 0 30px rgba(139,0,0,0.6), 0 0 14px rgba(201,162,39,0.45), 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.hero-btn-secondary {
+  background: transparent;
+  border-color: #c9a227;
+  color: #c9a227;
+  box-shadow: inset 0 0 0 0 rgba(201,162,39,0);
+}
+.hero-btn-secondary:hover {
+  color: #f0c040;
+  border-color: #f0c040;
+  box-shadow: 0 0 20px rgba(201,162,39,0.3), 0 4px 16px rgba(0,0,0,0.3);
+}
+
 </style>
 

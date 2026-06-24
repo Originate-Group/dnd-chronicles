@@ -2,244 +2,145 @@
 import Layout from '../layouts/Layout.astro';
 import { journeyMilestones, storyUpdates } from '../data/story';
 
-// ── Path + footprint generation ────────────────────────────
-const REF_W   = 1200;   // reference page width for % conversion
-const STEP_Y  = 90;     // px between each step-pair
-const N_STEPS = 42;     // steps down the page
-const START_Y = 280;    // px from top to first step
-
-// Single winding main path (x in ref px)
-function cx(step: number): number {
-  return REF_W * 0.5
-    + 190 * Math.sin(0.36 * step + 0.4)
-    +  70 * Math.sin(0.82 * step + 1.5);
-}
-// Path angle at each step (degrees from straight down)
-function pathAngle(step: number): number {
-  const dx = cx(step + 0.5) - cx(step - 0.5);
-  return Math.atan2(dx, STEP_Y) * (180 / Math.PI);
-}
-// Perpendicular offset: shift a point laterally by `dist` px relative to path direction
-function perp(step: number, dist: number): { dx: number; dy: number } {
-  const a = pathAngle(step) * (Math.PI / 180);
-  return { dx: Math.cos(a) * dist, dy: -Math.sin(a) * dist };
-}
-
-// 9 character lanes: lateral offset from path centreline (px)
-// negative = left of travel, positive = right
-const lanes = [
-  { type: 'minotaur', laneOffset: -68, footSpread: 14, scale: 1.0  },
-  { type: 'goliath',  laneOffset: -44, footSpread: 17, scale: 0.90 },
-  { type: 'human',    laneOffset: -22, footSpread: 12, scale: 0.75 },
-  { type: 'goblin',   laneOffset:  -5, footSpread:  8, scale: 0.60 },
-  { type: 'fairy',    laneOffset:   3, footSpread:  4, scale: 0.38 },
-  { type: 'elf',      laneOffset:  18, footSpread: 10, scale: 0.60 },
-  { type: 'lizard',   laneOffset:  38, footSpread: 13, scale: 0.75 },
-  { type: 'shadar',   laneOffset:  58, footSpread: 12, scale: 0.75 },
-  { type: 'centaur',  laneOffset:  82, footSpread:  0, scale: 1.0  },
-];
-
-interface Print {
-  x: number;   // % of REF_W → used as left%
-  y: number;   // absolute px from page top
-  angle: number;
-  isLeft: boolean;
-  type: string;
-  scale: number;
-  stepIdx: number;
-}
-
-const prints: Print[] = [];
-
-for (let s = 0; s < N_STEPS; s++) {
-  const mainX   = cx(s);
-  const y       = START_Y + s * STEP_Y;
-  const angle   = pathAngle(s);
-  const isLeft  = s % 2 === 0;
-
-  for (const lane of lanes) {
-    const { dx: ldx, dy: ldy } = perp(s, lane.laneOffset);
-    const laneX = mainX + ldx;
-
-    if (lane.type === 'centaur') {
-      prints.push({
-        x: (laneX + ldx * 0) / REF_W * 100,
-        y: y + ldy,
-        angle, isLeft: false,
-        type: 'centaur',
-        scale: lane.scale,
-        stepIdx: s,
-      });
-    } else {
-      const { dx: sdx, dy: sdy } = perp(s, isLeft ? -lane.footSpread : lane.footSpread);
-      prints.push({
-        x: (laneX + sdx) / REF_W * 100,
-        y: y + sdy + ldy,
-        angle, isLeft,
-        type: lane.type,
-        scale: lane.scale,
-        stepIdx: s,
-      });
-    }
-  }
-}
 ---
 
 <Layout title="The Journey" description="A timeline of the Motley Marauders' journey across the realm.">
-<div style="position:relative;">
-
-  <!-- Footprint background -->
-  <div class="fp-layer" aria-hidden="true">
-    {prints.map((p, i) => {
-      const flip = p.isLeft ? 'scale(-1,1)' : 'scale(1,1)';
-      const sz: Record<string,{w:number;h:number}> = {
-        minotaur: {w:22,h:18},
-        goliath:  {w:24,h:32},
-        human:    {w:18,h:28},
-        goblin:   {w:16,h:20},
-        fairy:    {w: 9,h:13},
-        elf:      {w:13,h:24},
-        lizard:   {w:28,h:22},
-        shadar:   {w:16,h:26},
-        centaur:  {w:52,h:24},
-      };
-      const d = sz[p.type] ?? {w:18,h:28};
-      const w = d.w * p.scale;
-      const h = d.h * p.scale;
-      return (
-        <div
-          class="fp"
-          data-step={p.stepIdx}
-          style={`left:${p.x.toFixed(2)}%;top:${p.y.toFixed(0)}px;width:${w.toFixed(1)}px;height:${h.toFixed(1)}px;transform:rotate(${p.angle}deg);`}
-        >
-          <svg
-            viewBox={`0 0 ${d.w} ${d.h}`}
-            width={w}
-            height={h}
-            fill="#c9973a"
-            stroke="#c9973a"
-            stroke-width="0.8"
-            overflow="visible"
-            style={`transform:${flip};`}
-          >
-            {p.type === 'minotaur' && (
-              <>
-                <ellipse cx="6.5"  cy="11" rx="5.5" ry="9"/>
-                <ellipse cx="15.5" cy="11" rx="5.5" ry="9"/>
-                <ellipse cx="6.5"  cy="3"  rx="2"   ry="1.2"/>
-                <ellipse cx="15.5" cy="3"  rx="2"   ry="1.2"/>
-              </>
-            )}
-            {p.type === 'centaur' && (
-              <>
-                <ellipse cx="13" cy="12" rx="7" ry="9"  transform="rotate(-10 13 12)"/>
-                <ellipse cx="39" cy="12" rx="7" ry="9"  transform="rotate( 10 39 12)"/>
-                <ellipse cx="16" cy="12" rx="6" ry="7.5" transform="rotate(-8 16 12)" opacity="0.5"/>
-                <ellipse cx="36" cy="12" rx="6" ry="7.5" transform="rotate( 8 36 12)" opacity="0.5"/>
-              </>
-            )}
-            {p.type === 'goblin' && (
-              <>
-                <ellipse cx="8" cy="13" rx="7" ry="6"/>
-                <ellipse cx="3"  cy="7"  rx="2.5" ry="3.5"/>
-                <ellipse cx="7"  cy="5"  rx="2.5" ry="4"/>
-                <ellipse cx="11" cy="5"  rx="2.5" ry="4"/>
-                <ellipse cx="14" cy="7"  rx="2"   ry="3"/>
-                <line x1="3"  y1="3.5"  x2="2.5" y2="1"   stroke-linecap="round"/>
-                <line x1="7"  y1="1"    x2="7"   y2="-1.5" stroke-linecap="round"/>
-                <line x1="11" y1="1"    x2="11"  y2="-1.5" stroke-linecap="round"/>
-                <line x1="14" y1="4"    x2="15"  y2="1.5" stroke-linecap="round"/>
-              </>
-            )}
-            {p.type === 'goliath' && (
-              <>
-                <ellipse cx="12" cy="26" rx="10" ry="6"/>
-                <rect    x="3"  cy="10" width="18" height="18" rx="4" y="10"/>
-                <ellipse cx="11" cy="8"  rx="11"  ry="8"/>
-                <circle  cx="2"  cy="1"  r="3"/>
-                <circle  cx="7"  cy="-2" r="3.5"/>
-                <circle  cx="12" cy="-3" r="3.5"/>
-                <circle  cx="17" cy="-1" r="3"/>
-                <circle  cx="21" cy="3"  r="2.5"/>
-              </>
-            )}
-            {p.type === 'lizard' && (
-              <>
-                <ellipse cx="14" cy="16" rx="8" ry="6"/>
-                <ellipse cx="3"  cy="9"  rx="3" ry="7.5" transform="rotate(-35 3 9)"/>
-                <ellipse cx="9"  cy="4"  rx="2.5" ry="7" transform="rotate(-12 9 4)"/>
-                <ellipse cx="16" cy="3"  rx="2.5" ry="7" transform="rotate( 12 16 3)"/>
-                <ellipse cx="23" cy="7"  rx="3" ry="7.5" transform="rotate( 35 23 7)"/>
-                <line x1="0"  y1="5"  x2="-2" y2="3"  stroke-linecap="round"/>
-                <line x1="8"  y1="-3" x2="8"  y2="-5" stroke-linecap="round"/>
-                <line x1="16" y1="-4" x2="16" y2="-6" stroke-linecap="round"/>
-                <line x1="26" y1="3"  x2="28" y2="1"  stroke-linecap="round"/>
-              </>
-            )}
-            {p.type === 'elf' && (
-              <>
-                <ellipse cx="6.5" cy="20" rx="5"  ry="4"/>
-                <rect    x="2"    y="9"   width="9" height="13" rx="2"/>
-                <ellipse cx="6"   cy="7"  rx="6"  ry="5.5"/>
-                <circle  cx="1"   cy="3"  r="1.5"/>
-                <circle  cx="4"   cy="1"  r="1.8"/>
-                <circle  cx="7.5" cy="0.5" r="1.7"/>
-                <circle  cx="10.5" cy="2" r="1.5"/>
-                <circle  cx="12.5" cy="5" r="1.2"/>
-              </>
-            )}
-            {p.type === 'shadar' && (
-              <>
-                <path d="M2,24 C2,26 6,28 8,28 C10,28 14,26 14,24 L14,6 C14,1 10,-2 8,-2 C6,-2 2,1 2,6 Z"/>
-                <ellipse cx="8" cy="2"  rx="6.5" ry="4.5"/>
-                <ellipse cx="8" cy="22" rx="5.5"  ry="3"/>
-              </>
-            )}
-            {p.type === 'human' && (
-              <>
-                <ellipse cx="9"  cy="23" rx="7.5" ry="5.5"/>
-                <rect    x="2"   y="9"   width="14" height="16" rx="3.5"/>
-                <ellipse cx="8"  cy="7"  rx="8.5" ry="7"/>
-                <circle  cx="1"  cy="1"  r="2.5"/>
-                <circle  cx="5"  cy="-2" r="3"/>
-                <circle  cx="9"  cy="-3" r="2.8"/>
-                <circle  cx="13" cy="-1" r="2.5"/>
-                <circle  cx="16" cy="3"  r="2"/>
-              </>
-            )}
-            {p.type === 'fairy' && (
-              <>
-                <ellipse cx="4.5" cy="10" rx="3.5" ry="3"/>
-                <ellipse cx="4.5" cy="6"  rx="4"   ry="4.5"/>
-                <circle  cx="1.5" cy="2"  r="1.3"/>
-                <circle  cx="4"   cy="0.5" r="1.5"/>
-                <circle  cx="7"   cy="1"  r="1.3"/>
-                <circle  cx="8.5" cy="3.5" r="1.1"/>
-              </>
-            )}
-          </svg>
-        </div>
-      );
-    })}
-  </div>
-
-  <!-- Page content -->
-  <div style="position:relative; z-index:1;">
 
     <!-- Page header -->
-    <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18;">
-      <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:1rem;">From There to Here</p>
-      <h1 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:clamp(2rem,5vw,3.5rem); font-weight:700;" class="text-glow-gold">
+    <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18; position:relative; overflow:hidden;">
+
+      <!-- Serpent — left side -->
+      <div style="position:absolute; left:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+        <img
+          src="/serpent.jpg"
+          alt=""
+          style="width:100%; height:100%; object-fit:cover; object-position:right top; opacity:0.75; mask-image:linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%); -webkit-mask-image:linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);"
+        />
+      </div>
+
+      <!-- Dwarfs — right side -->
+      <div style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+        <img
+          src="/dwarfs.jpg"
+          alt=""
+          style="width:100%; height:100%; object-fit:cover; object-position:center top; opacity:0.75; mask-image:linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%); -webkit-mask-image:linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);"
+        />
+      </div>
+
+      <!-- Constellation map -->
+      <svg class="constell-svg" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+
+        <!-- Group A: top-left — 5 stars -->
+        <g class="constell" style="--delay:0s; --dur:11s;">
+          <line x1="70"  y1="35"  x2="140" y2="18"  class="cline"/>
+          <line x1="140" y1="18"  x2="195" y2="52"  class="cline"/>
+          <line x1="195" y1="52"  x2="158" y2="92"  class="cline"/>
+          <line x1="158" y1="92"  x2="72"  y2="78"  class="cline"/>
+          <circle cx="70"  cy="35"  r="1.4" class="cstar pa"/>
+          <circle cx="140" cy="18"  r="1.8" class="cstar pb"/>
+          <circle cx="195" cy="52"  r="1.1" class="cstar pc"/>
+          <circle cx="158" cy="92"  r="1.4" class="cstar pa"/>
+          <circle cx="72"  cy="78"  r="0.9" class="cstar pb"/>
+        </g>
+
+        <!-- Group B: top-right — 4 stars -->
+        <g class="constell" style="--delay:0.8s; --dur:9s;">
+          <line x1="978"  y1="22"  x2="1048" y2="12"  class="cline"/>
+          <line x1="1048" y1="12"  x2="1112" y2="30"  class="cline"/>
+          <line x1="1112" y1="30"  x2="1092" y2="74"  class="cline"/>
+          <circle cx="978"  cy="22"  r="1.1" class="cstar pb"/>
+          <circle cx="1048" cy="12"  r="1.6" class="cstar pa"/>
+          <circle cx="1112" cy="30"  r="1.2" class="cstar pc"/>
+          <circle cx="1092" cy="74"  r="1.0" class="cstar pb"/>
+        </g>
+
+        <!-- Group C: bottom-left — triangle -->
+        <g class="constell" style="--delay:0.4s; --dur:13s;">
+          <line x1="82"  y1="222" x2="162" y2="248" class="cline"/>
+          <line x1="162" y1="248" x2="102" y2="284" class="cline"/>
+          <line x1="102" y1="284" x2="82"  y2="222" class="cline"/>
+          <circle cx="82"  cy="222" r="1.5" class="cstar pa"/>
+          <circle cx="162" cy="248" r="1.2" class="cstar pc"/>
+          <circle cx="102" cy="284" r="1.0" class="cstar pb"/>
+        </g>
+
+        <!-- Group D: bottom-right — 5 stars -->
+        <g class="constell" style="--delay:1.4s; --dur:10s;">
+          <line x1="1055" y1="215" x2="1128" y2="232" class="cline"/>
+          <line x1="1128" y1="232" x2="1152" y2="272" class="cline"/>
+          <line x1="1152" y1="272" x2="1082" y2="282" class="cline"/>
+          <line x1="1082" y1="282" x2="1042" y2="255" class="cline"/>
+          <circle cx="1055" cy="215" r="1.2" class="cstar pc"/>
+          <circle cx="1128" cy="232" r="1.6" class="cstar pa"/>
+          <circle cx="1152" cy="272" r="1.0" class="cstar pb"/>
+          <circle cx="1082" cy="282" r="1.4" class="cstar pa"/>
+          <circle cx="1042" cy="255" r="0.9" class="cstar pc"/>
+        </g>
+
+        <!-- Group E: left edge — 4 stars -->
+        <g class="constell" style="--delay:1.8s; --dur:14s;">
+          <line x1="28"  y1="118" x2="60"  y2="138" class="cline"/>
+          <line x1="60"  y1="138" x2="46"  y2="170" class="cline"/>
+          <line x1="46"  y1="170" x2="16"  y2="158" class="cline"/>
+          <circle cx="28"  cy="118" r="1.2" class="cstar pb"/>
+          <circle cx="60"  cy="138" r="1.5" class="cstar pa"/>
+          <circle cx="46"  cy="170" r="1.0" class="cstar pc"/>
+          <circle cx="16"  cy="158" r="1.1" class="cstar pb"/>
+        </g>
+
+        <!-- Group F: right edge — 3 stars -->
+        <g class="constell" style="--delay:1.1s; --dur:8s;">
+          <line x1="1158" y1="110" x2="1132" y2="150" class="cline"/>
+          <line x1="1132" y1="150" x2="1162" y2="178" class="cline"/>
+          <circle cx="1158" cy="110" r="1.4" class="cstar pa"/>
+          <circle cx="1132" cy="150" r="1.0" class="cstar pc"/>
+          <circle cx="1162" cy="178" r="1.2" class="cstar pb"/>
+        </g>
+
+        <!-- Group G: upper-centre-left — 3 stars -->
+        <g class="constell" style="--delay:0.5s; --dur:15s;">
+          <line x1="292" y1="24"  x2="348" y2="10"  class="cline"/>
+          <line x1="348" y1="10"  x2="388" y2="42"  class="cline"/>
+          <circle cx="292" cy="24"  r="1.0" class="cstar pc"/>
+          <circle cx="348" cy="10"  r="1.6" class="cstar pa"/>
+          <circle cx="388" cy="42"  r="1.1" class="cstar pb"/>
+        </g>
+
+        <!-- Group H: upper-centre-right — 4 stars -->
+        <g class="constell" style="--delay:1.2s; --dur:12s;">
+          <line x1="828" y1="16"  x2="880" y2="8"   class="cline"/>
+          <line x1="880" y1="8"   x2="930" y2="24"  class="cline"/>
+          <line x1="930" y1="24"  x2="918" y2="60"  class="cline"/>
+          <circle cx="828" cy="16"  r="1.1" class="cstar pb"/>
+          <circle cx="880" cy="8"   r="1.8" class="cstar pa"/>
+          <circle cx="930" cy="24"  r="1.0" class="cstar pc"/>
+          <circle cx="918" cy="60"  r="1.2" class="cstar pb"/>
+        </g>
+
+        <!-- Lone guide stars — scattered, independent pulse -->
+        <circle cx="240"  cy="148" r="0.9" class="cstar lone" style="--ld:0.5s;"/>
+        <circle cx="375"  cy="268" r="1.1" class="cstar lone" style="--ld:1.2s;"/>
+        <circle cx="598"  cy="22"  r="1.2" class="cstar lone" style="--ld:0.2s;"/>
+        <circle cx="822"  cy="262" r="0.8" class="cstar lone" style="--ld:1.7s;"/>
+        <circle cx="452"  cy="278" r="1.0" class="cstar lone" style="--ld:0.9s;"/>
+        <circle cx="748"  cy="20"  r="0.9" class="cstar lone" style="--ld:1.4s;"/>
+        <circle cx="168"  cy="180" r="0.8" class="cstar lone" style="--ld:1.0s;"/>
+        <circle cx="1035" cy="145" r="1.0" class="cstar lone" style="--ld:2.0s;"/>
+
+      </svg>
+
+      <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:1rem; position:relative; z-index:1;">From There to Here</p>
+      <h1 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:clamp(2rem,5vw,3.5rem); font-weight:700; position:relative; z-index:1;" class="text-glow-gold">
         The Journey So Far
       </h1>
-      <div class="rune-divider" style="max-width:16rem; margin:1.5rem auto 0;"></div>
-      <p style="color:#c9a96e; font-style:italic; margin-top:1rem; max-width:40rem; margin-left:auto; margin-right:auto;">
+      <div class="rune-divider" style="max-width:16rem; margin:1.5rem auto 0; position:relative; z-index:1;"></div>
+      <p style="color:#c9a96e; font-style:italic; margin-top:1rem; max-width:40rem; margin-left:auto; margin-right:auto; position:relative; z-index:1;">
         Every road walked, every enemy made, every impossible situation narrowly survived — laid out in order of foolishness.
       </p>
     </div>
 
     <!-- Stats bar -->
-    <div style="border-bottom:1px solid #3d2e18; padding:1.5rem 1rem;">
+    <div class="reveal" style="border-bottom:1px solid #3d2e18; padding:1.5rem 1rem;">
       <div style="max-width:72rem; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:1rem; text-align:center;">
         {[
           { label: 'Sessions Played',   value: storyUpdates.length },
@@ -250,7 +151,7 @@ for (let s = 0; s < N_STEPS; s++) {
         ].map(stat => (
           <div>
             <div style="font-family:'Cinzel',serif; color:#f0c040; font-size:1.5rem; font-weight:700;">{stat.value}</div>
-            <div style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase;">{stat.label}</div>
+            <div style="font-family:'Cinzel',serif; color:#9a8060; font-size:0.8rem; letter-spacing:0.08em; text-transform:uppercase; font-weight:600;">{stat.label}</div>
           </div>
         ))}
       </div>
@@ -259,19 +160,24 @@ for (let s = 0; s < N_STEPS; s++) {
     <!-- Timeline -->
     <div style="max-width:48rem; margin:0 auto; padding:5rem 1rem; position:relative;">
       {journeyMilestones.map((milestone, i) => (
-        <div style={`display:flex; align-items:flex-start; gap:1.5rem; margin-bottom:3rem; ${i % 2 === 1 ? 'flex-direction:row-reverse;' : ''}`}>
-          <div style="width:3.5rem;height:3.5rem;border-radius:50%;background:linear-gradient(135deg,#231a0e,#1a1208);border:2px solid #3d2e18;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;z-index:1;position:relative;">
-            {milestone.icon}
+        <div id={milestone.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')} class={i % 2 === 0 ? 'reveal-left' : 'reveal-right'} style={`display:flex; align-items:flex-start; gap:1.5rem; margin-bottom:3rem; ${i % 2 === 1 ? 'flex-direction:row-reverse;' : ''}`}>
+          <div style="width:3.5rem;height:3.5rem;border-radius:50%;background:linear-gradient(135deg,#231a0e,#1a1208);border:2px solid #3d2e18;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;position:relative;">
+            <Fragment set:html={milestone.icon} />
           </div>
           <div class="parchment-card corner-ornament" style="flex:1;padding:1.25rem;">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;">
               <h2 style="font-family:'Cinzel',serif;color:#f0c040;font-size:1rem;font-weight:700;">{milestone.title}</h2>
-              <span style="font-size:0.7rem;color:#c9a227;font-family:'Cinzel',serif;white-space:nowrap;">📍 {milestone.location}</span>
+              <span style="font-size:0.7rem;color:#c9a227;font-family:'Cinzel',serif;white-space:nowrap;display:inline-flex;align-items:center;gap:0.25rem;">
+                <svg width="10" height="13" viewBox="0 0 10 13" fill="white" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 0C2.24 0 0 2.24 0 5c0 3.75 5 8 5 8s5-4.25 5-8c0-2.76-2.24-5-5-5zm0 6.5A1.5 1.5 0 1 1 5 3.5a1.5 1.5 0 0 1 0 3z"/>
+                </svg>
+                {milestone.location}
+              </span>
             </div>
             <p style="color:#c9a96e;font-size:0.875rem;line-height:1.7;margin-bottom:0.75rem;">{milestone.description}</p>
             <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">
               {milestone.tags.map(tag => (
-                <span style="font-size:0.65rem;padding:0.15rem 0.5rem;border:1px solid #3d2e18;color:#6b5a3e;font-family:'Cinzel',serif;letter-spacing:0.05em;text-transform:uppercase;">{tag}</span>
+                <span style="font-size:0.75rem;padding:0.15rem 0.5rem;border:1px solid #6b5a3e;color:#9a8060;font-family:'Cinzel',serif;letter-spacing:0.05em;text-transform:uppercase;font-weight:500;">{tag}</span>
               ))}
             </div>
           </div>
@@ -279,100 +185,82 @@ for (let s = 0; s < N_STEPS; s++) {
       ))}
 
       <!-- What's next -->
-      <div style="display:flex;align-items:flex-start;gap:1.5rem;">
+      <div class="reveal-rotate" style="display:flex;align-items:flex-start;gap:1.5rem;">
         <div style="width:3.5rem;height:3.5rem;border-radius:50%;border:2px dashed #3d2e18;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;opacity:0.4;">?</div>
         <div class="parchment-card" style="flex:1;padding:1.25rem;border-style:dashed;">
-          <h2 style="font-family:'Cinzel',serif;color:#6b5a3e;font-size:1rem;font-weight:700;margin-bottom:0.5rem;">The Next Chapter...</h2>
-          <p style="color:#3d2e18;font-style:italic;font-size:0.875rem;">
-            The Archivist's offer hangs in the air. The Hollow Crown stirs. The Marauders have until the new moon to decide. Whatever comes next — it won't be boring.
+          <h2 style="font-family:'Cinzel',serif;color:#9a8060;font-size:1rem;font-weight:700;margin-bottom:0.5rem;">The Next Chapter...</h2>
+          <p style="color:#6b5a3e;font-style:italic;font-size:0.875rem;">
+            The Rift beneath Velento stirs. The Five Stones to banish Bane must be found. Strahd von Zarovich — the first vampire — holds one. Whatever comes next — it won't be boring.
           </p>
         </div>
       </div>
     </div>
 
     <!-- Map placeholder -->
-    <div style="max-width:72rem;margin:0 auto;padding:0 1rem 5rem;">
+    <div class="reveal-scale" style="max-width:72rem;margin:0 auto;padding:0 1rem 5rem;">
       <div style="border:1px solid #3d2e18;padding:3rem;text-align:center;background:linear-gradient(135deg,#1a1208,#231a0e);position:relative;overflow:hidden;">
         <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(201,162,39,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,162,39,0.03) 1px,transparent 1px);background-size:32px 32px;"></div>
         <div style="position:relative;z-index:1;">
-          <p style="font-size:3rem;margin-bottom:1rem;">🗺️</p>
           <h3 style="font-family:'Cinzel',serif;color:#c9a227;font-size:1.25rem;margin-bottom:0.5rem;">The Realm Map</h3>
-          <p style="color:#6b5a3e;font-style:italic;font-size:0.875rem;">
-            The cartographer is still catching up. Add your map image here — drop a file in <code style="color:#c9a96e;font-size:0.8rem;">public/map.jpg</code> and update this section.
+          <p style="color:#9a8060;font-style:italic;font-size:0.95rem;font-weight:500;">
+            The cartographer is still catching up. Drop a map image in <code style="color:#c9a96e;font-size:0.8rem;">public/map.jpg</code> and update this section.
           </p>
         </div>
       </div>
     </div>
 
-  </div><!-- /page content -->
-</div><!-- /relative wrapper -->
-
 </Layout>
 
 <style>
-/* Footprint layer */
-.fp-layer {
+/* ── Constellation map ─────────────────────── */
+.constell-svg {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 0;
-  overflow: hidden;
 }
 
-/* Each individual footprint */
-.fp {
-  position: absolute;
-  transform-origin: center center;
+.constell {
   opacity: 0;
-  transition: opacity 0.35s ease, transform 0.35s ease;
-  /* start squished */
-  filter: opacity(0);
+  animation: constellFade var(--dur) ease-in-out var(--delay) infinite;
 }
 
-/* Revealed state — added by JS */
-.fp.stepped {
-  opacity: 1;
-  filter: opacity(1);
+@keyframes constellFade {
+  0%   { opacity: 0; }
+  5%   { opacity: 1; }
+  75%  { opacity: 0.9; }
+  92%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+.cline {
+  stroke: rgba(240, 192, 64, 0.45);
+  stroke-width: 0.5;
+  stroke-dasharray: 3 3;
+}
+
+.cstar {
+  fill: #f0c040;
+}
+.pa { animation: cPulse 2.8s ease-in-out infinite alternate; }
+.pb { animation: cPulse 3.5s ease-in-out 1s infinite alternate; }
+.pc { animation: cPulse 2.2s ease-in-out 1.8s infinite alternate; }
+
+@keyframes cPulse {
+  0%   { opacity: 0.5; filter: drop-shadow(0 0 2px rgba(240,192,64,0.5)); }
+  100% { opacity: 1;   filter: drop-shadow(0 0 6px rgba(255,220,80,1)); }
+}
+
+.lone {
+  fill: #c9a227;
+  opacity: 0;
+  animation: lonePulse 7s ease-in-out var(--ld, 0s) infinite;
+}
+
+@keyframes lonePulse {
+  0%, 100% { opacity: 0; }
+  20%, 80%  { opacity: 0.55; filter: drop-shadow(0 0 4px rgba(201,162,39,0.8)); }
 }
 </style>
-
-<script>
-  // Reveal footprints row-by-row as they scroll into view,
-  // staggering within each row so left then right appears
-  const prints = document.querySelectorAll<HTMLElement>('.fp');
-
-  // Group by step index
-  const byStep = new Map<number, HTMLElement[]>();
-  prints.forEach(el => {
-    const s = Number(el.dataset.step ?? 0);
-    if (!byStep.has(s)) byStep.set(s, []);
-    byStep.get(s)!.push(el);
-  });
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        const el = entry.target as HTMLElement;
-        const step = Number(el.dataset.step ?? 0);
-        const group = byStep.get(step) ?? [];
-
-        // Stagger prints within the same row
-        group.forEach((print, i) => {
-          setTimeout(() => {
-            print.classList.add('stepped');
-          }, i * 28);
-        });
-
-        // Once revealed, stop watching
-        group.forEach(p => observer.unobserve(p));
-      });
-    },
-    { rootMargin: '0px 0px -8% 0px', threshold: 0.1 }
-  );
-
-  // Only observe the first element of each step group (trigger for the whole row)
-  byStep.forEach((group) => {
-    if (group[0]) observer.observe(group[0]);
-  });
-</script>

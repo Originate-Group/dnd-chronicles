@@ -1,23 +1,60 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { characters, companions } from '../data/characters';
+import { quotes } from '../data/story';
+
+// Build a map: normalised speaker name → best (latest session) quote text
+const quoteMap = new Map<string, string>();
+for (const q of quotes) {
+  const key = q.speaker.toLowerCase().replace(/[^a-z]/g, '');
+  quoteMap.set(key, q.text); // later entries overwrite earlier ones
+}
+
+function getQuote(charName: string, fallback: string): string {
+  const key = charName.toLowerCase().replace(/[^a-z]/g, '');
+  // also try first-name-only match
+  const firstName = key.split('(')[0].trim();
+  return quoteMap.get(key) ?? quoteMap.get(firstName) ?? (fallback !== 'Add a memorable quote here.' ? fallback : '');
+}
 ---
 
 <Layout title="The Party" description="Meet the Motley Marauders — character bios, stats, and portraits.">
 
   <!-- Page header -->
-  <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18;">
-    <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:1rem;">Roll for Initiative</p>
-    <h1 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:clamp(2rem,5vw,3.5rem); font-weight:700;" class="text-glow-gold">
+  <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18; position:relative; overflow:hidden;">
+
+    <!-- Trees — left side -->
+    <div style="position:absolute; left:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+      <img
+        src="/trees.jpg"
+        alt=""
+        style="width:100%; height:100%; object-fit:cover; object-position:center top; opacity:0.75; mask-image:linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%); -webkit-mask-image:linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);"
+      />
+    </div>
+
+    <!-- Bonfire — right side -->
+    <div style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+      <img
+        src="/bonfire.jpg"
+        alt=""
+        style="width:100%; height:100%; object-fit:cover; object-position:center top; opacity:0.75; mask-image:linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%); -webkit-mask-image:linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);"
+      />
+    </div>
+
+    <!-- Fireflies canvas -->
+    <canvas id="fireflies" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
+
+    <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:1rem; position:relative; z-index:1;">Roll for Initiative</p>
+    <h1 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:clamp(2rem,5vw,3.5rem); font-weight:700; position:relative; z-index:1;" class="text-glow-gold">
       The Party
     </h1>
-    <div class="rune-divider" style="max-width:16rem; margin:1.5rem auto 0;"></div>
-    <p style="color:#c9a96e; font-style:italic; margin-top:1rem; max-width:40rem; margin-left:auto; margin-right:auto;">
+    <div class="rune-divider" style="max-width:16rem; margin:1.5rem auto 0; position:relative; z-index:1;"></div>
+    <p style="color:#c9a96e; font-style:italic; margin-top:1rem; max-width:40rem; margin-left:auto; margin-right:auto; position:relative; z-index:1;">
       Eleven adventurers. One very chaotic campaign.
     </p>
 
     <!-- Quick-jump nav -->
-    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:center; margin-top:2rem;">
+    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:center; margin-top:2rem; position:relative; z-index:1;">
       {characters.map(c => (
         <a href={`#${c.name.toLowerCase().replace(/[\s()\/]/g,'-').replace(/-+/g,'-')}`}
           class={`badge-${c.classSlug}`}
@@ -32,13 +69,11 @@ import { characters, companions } from '../data/characters';
   <!-- Characters -->
   <div style="max-width:72rem; margin:0 auto; padding:4rem 1rem;">
     {characters.map((char, i) => {
-      const hpPercent = Math.round((char.hp / char.maxHp) * 100);
-      const hpColor = hpPercent > 60 ? '#4ade80' : hpPercent > 25 ? '#facc15' : '#f87171';
       const anchorId = char.name.toLowerCase().replace(/[\s()\/]/g,'-').replace(/-+/g,'-');
       return (
         <article
           id={anchorId}
-          class="parchment-card"
+          class={`parchment-card ${i % 2 === 0 ? 'reveal-left' : 'reveal-right'}`}
           style={`margin-bottom:3rem; overflow:hidden; border-left:3px solid ${i % 2 === 0 ? '#8b0000' : '#c9a227'};`}
         >
           <!-- Top section: portrait + identity + stats -->
@@ -50,7 +85,7 @@ import { characters, companions } from '../data/characters';
                 <img
                   src={char.image}
                   alt={char.name}
-                  style="width:200px; height:260px; object-fit:cover; object-position:top; display:block; filter:sepia(20%) contrast(1.05);"
+                  style={`width:200px; height:260px; object-fit:cover; display:block; filter:sepia(20%) contrast(1.05); ${char.name === 'Thalara' ? 'object-position:center 15%;' : 'object-position:top;'}`}
                 />
               ) : (
                 <div style="width:200px; height:260px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#1a1208,#231a0e);">
@@ -68,13 +103,8 @@ import { characters, companions } from '../data/characters';
               <div>
                 <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; margin-bottom:0.4rem;">
                   <h2 style="font-family:'Cinzel',serif; color:#f0c040; font-size:1.4rem; font-weight:700; line-height:1.1;">{char.name}</h2>
-                  {char.conditions?.map(cond => (
-                    <span style="font-size:0.65rem; padding:0.15rem 0.5rem; border:1px solid #8b0000; color:#f87171; font-family:'Cinzel',serif; letter-spacing:0.05em; text-transform:uppercase; animation:flicker 2s ease-in-out infinite;">
-                      ⚠ {cond}
-                    </span>
-                  ))}
                 </div>
-                <p style="font-size:0.8rem; color:#6b5a3e; font-family:'Cinzel',serif;">Player: {char.player}</p>
+                <p style="font-size:0.875rem; color:#9a8060; font-family:'Cinzel',serif; font-weight:500;">Player: {char.player}</p>
               </div>
 
               <!-- Class/Race badges -->
@@ -85,42 +115,33 @@ import { characters, companions } from '../data/characters';
                 <span style="font-size:0.7rem; color:#c9a96e; font-family:'Cinzel',serif; padding:0.2rem 0.6rem; border:1px solid #3d2e18; border-radius:9999px;">
                   {char.race}
                 </span>
-                <span style="font-size:0.7rem; color:#6b5a3e; font-family:'Cinzel',serif; padding:0.2rem 0.6rem; border:1px solid #3d2e18; border-radius:9999px;">
-                  Level {char.level}
-                </span>
+                {char.classSlug !== 'dm' && (
+                  <span style="font-size:0.7rem; color:#6b5a3e; font-family:'Cinzel',serif; padding:0.2rem 0.6rem; border:1px solid #3d2e18; border-radius:9999px;">
+                    Level {char.level}
+                  </span>
+                )}
                 {char.subclass && (
-                  <span style="font-size:0.65rem; color:#6b5a3e; font-style:italic; font-family:'IM Fell English',serif;">
+                  <span style="font-size:0.82rem; color:#a08860; font-style:italic; font-family:'IM Fell English',serif; font-weight:500;">
                     {char.subclass}
                   </span>
                 )}
               </div>
 
-              <!-- HP bar -->
-              <div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem;">
-                  <span style="font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; color:#6b5a3e;">Hit Points</span>
-                  <span style="font-family:'Cinzel',serif; font-size:0.8rem; color:{hpColor};">{char.hp} / {char.maxHp}</span>
-                </div>
-                <div style="height:6px; background:#1a1208; border:1px solid #3d2e18; border-radius:3px; overflow:hidden;">
-                  <div style={`height:100%; width:${hpPercent}%; background:${hpColor}; transition:width 0.3s; border-radius:3px;`}></div>
-                </div>
-              </div>
-
               <!-- Stat grid -->
-              <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(80px,1fr)); gap:0.5rem;">
+              {char.classSlug !== 'dm' && <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px,1fr)); gap:0.5rem;">
                 {[
                   { label: 'AC', value: char.ac },
-                  { label: 'P. Perc.', value: char.passivePerception },
-                  { label: 'P. Invest.', value: char.passiveInvestigation },
-                  { label: 'P. Insight', value: char.passiveInsight },
+                  { label: 'Passive Perception', value: char.passivePerception },
+                  { label: 'Passive Investigation', value: char.passiveInvestigation },
+                  { label: 'Passive Insight', value: char.passiveInsight },
                   ...(char.darkvision ? [{ label: 'Darkvision', value: `${char.darkvision}ft` }] : []),
                 ].map(stat => (
-                  <div style="text-align:center; background:rgba(0,0,0,0.2); border:1px solid #3d2e18; padding:0.4rem 0.25rem; border-radius:2px;">
+                  <div style="display:flex; flex-direction:column; align-items:center; justify-content:flex-start; text-align:center; background:rgba(0,0,0,0.2); border:1px solid #3d2e18; padding:0.6rem 0.75rem; border-radius:2px;">
                     <div style="font-family:'Cinzel',serif; font-size:1rem; font-weight:700; color:#f0c040; line-height:1;">{stat.value}</div>
-                    <div style="font-family:'Cinzel',serif; font-size:0.55rem; letter-spacing:0.05em; text-transform:uppercase; color:#6b5a3e; margin-top:0.2rem; line-height:1.2;">{stat.label}</div>
+                    <div style="font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.05em; text-transform:uppercase; color:#9a8060; margin-top:0.3rem; line-height:1.3; font-weight:600;">{stat.label}</div>
                   </div>
                 ))}
-              </div>
+              </div>}
 
             </div>
           </div>
@@ -135,10 +156,12 @@ import { characters, companions } from '../data/characters';
               <p style="color:#c9a96e; line-height:1.8; font-size:0.95rem;">{char.bio}</p>
             </div>
 
-            <blockquote class="dnd-quote" style="max-width:260px; flex-shrink:0;">
-              <p style="font-size:0.9rem;">"{char.quote}"</p>
-              <footer style="margin-top:0.5rem; font-style:normal; font-family:'Cinzel',serif; font-size:0.75rem; color:#c9a227;">— {char.name.split(' ')[0]}</footer>
-            </blockquote>
+            {getQuote(char.name, char.quote) && (
+              <blockquote class="dnd-quote" style="max-width:260px; flex-shrink:0;">
+                <p style="font-size:0.9rem;">"{getQuote(char.name, char.quote)}"</p>
+                <footer style="margin-top:0.5rem; font-style:normal; font-family:'Cinzel',serif; font-size:0.75rem; color:#c9a227;">— {char.name.split(' ')[0].split('(')[0].trim()}</footer>
+              </blockquote>
+            )}
           </div>
 
         </article>
@@ -149,7 +172,7 @@ import { characters, companions } from '../data/characters';
     {companions.length > 0 && (
       <div style="margin-top:2rem;">
         <div class="rune-divider" style="margin-bottom:2rem;">
-          <span style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase; white-space:nowrap; padding:0 1rem;">
+          <span style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:0.75rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; white-space:nowrap; padding:0 1rem;">
             Party Companions
           </span>
         </div>
@@ -160,17 +183,17 @@ import { characters, companions } from '../data/characters';
                 <img
                   src={companion.image}
                   alt={companion.name}
-                  style="width:100%; height:200px; object-fit:cover; object-position:top; filter:sepia(20%) contrast(1.05);"
+                  style={`width:100%; height:200px; object-fit:cover; filter:sepia(20%) contrast(1.05); ${companion.name === 'Bucky' || companion.name === 'Boblin' ? 'object-position:center;' : 'object-position:top;'}`}
                 />
               )}
               <div style="padding:1rem;">
                 <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
                   <h3 style="font-family:'Cinzel',serif; color:#f0c040; font-size:1rem; font-weight:700;">{companion.name}</h3>
-                  <span style="font-size:0.65rem; padding:0.15rem 0.5rem; border:1px solid #6b5a3e; color:#6b5a3e; font-family:'Cinzel',serif; border-radius:9999px;">
+                  <span style="font-size:0.75rem; padding:0.15rem 0.5rem; border:1px solid #9a8060; color:#9a8060; font-family:'Cinzel',serif; border-radius:9999px; font-weight:500;">
                     {companion.type}
                   </span>
                 </div>
-                <p style="font-size:0.85rem; color:#c9a96e; font-style:italic; margin-bottom:0.75rem;">{companion.description}</p>
+                <p style="color:#c9a96e; line-height:1.8; font-size:0.95rem; margin-bottom:0.75rem;">{companion.description}</p>
                 {companion.quote && (
                   <blockquote class="dnd-quote" style="margin-top:0.5rem;">
                     <p style="font-size:0.8rem;">"{companion.quote}"</p>
@@ -198,4 +221,109 @@ import { characters, companions } from '../data/characters';
       height: 220px !important;
     }
   }
+
 </style>
+
+<script is:inline>
+(function () {
+  const canvas = document.getElementById('fireflies');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    initFireflies();
+  }
+
+  const COUNT = 55;
+  let flies = [];
+
+  function rand(min, max) { return min + Math.random() * (max - min); }
+
+  function initFireflies() {
+    const W = canvas.width, H = canvas.height;
+    flies = Array.from({ length: COUNT }, () => ({
+      x:        rand(0, W),
+      y:        rand(0, H),
+      r:        rand(1.2, 2.8),           // dot radius
+      // slow wandering velocity
+      vx:       rand(-0.25, 0.25),
+      vy:       rand(-0.25, 0.25),
+      // direction drift — changes gradually
+      ax:       rand(-0.004, 0.004),
+      ay:       rand(-0.004, 0.004),
+      // independent pulse cycle for brightness
+      phase:    rand(0, Math.PI * 2),
+      pulseSpd: rand(0.004, 0.014),       // how fast it fades in/out
+      // colour: mostly warm gold, occasional cool green-gold
+      hue:      Math.random() < 0.85 ? rand(42, 58) : rand(72, 90),
+    }));
+  }
+
+  function draw(t) {
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'lighter';
+
+    for (const f of flies) {
+      // Advance pulse
+      f.phase += f.pulseSpd;
+      // Brightness: smooth sine, range 0 → 1, spend more time dim
+      const bright = Math.max(0, Math.sin(f.phase)) ** 1.8;
+
+      if (bright < 0.01) {
+        // While invisible, teleport to a new random spot so they "appear" afresh
+        if (Math.random() < 0.04) {
+          f.x = rand(0, W);
+          f.y = rand(0, H);
+        }
+        continue;
+      }
+
+      // Wander
+      f.vx += f.ax; f.vy += f.ay;
+      // Clamp speed
+      const spd = Math.hypot(f.vx, f.vy);
+      if (spd > 0.45) { f.vx *= 0.45 / spd; f.vy *= 0.45 / spd; }
+      // Gradually drift acceleration direction
+      f.ax += rand(-0.0006, 0.0006);
+      f.ay += rand(-0.0006, 0.0006);
+      f.ax = Math.max(-0.006, Math.min(0.006, f.ax));
+      f.ay = Math.max(-0.006, Math.min(0.006, f.ay));
+
+      f.x += f.vx; f.y += f.vy;
+      // Wrap edges softly
+      if (f.x < -10) f.x = W + 10;
+      if (f.x > W + 10) f.x = -10;
+      if (f.y < -10) f.y = H + 10;
+      if (f.y > H + 10) f.y = -10;
+
+      // Draw: soft outer glow + bright core
+      const alpha = bright * 0.85;
+      const glow = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r * 9);
+      glow.addColorStop(0,   `hsla(${f.hue},90%,80%,${alpha})`);
+      glow.addColorStop(0.3, `hsla(${f.hue},85%,65%,${(alpha * 0.6).toFixed(3)})`);
+      glow.addColorStop(1,   `hsla(${f.hue},80%,50%,0)`);
+
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r * 9, 0, Math.PI * 2);
+      ctx.fillStyle = glow;
+      ctx.fill();
+
+      // Bright centre dot
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r * bright, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${f.hue},100%,95%,${alpha})`;
+      ctx.fill();
+    }
+
+    ctx.globalCompositeOperation = 'source-over';
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  new ResizeObserver(resize).observe(canvas);
+  requestAnimationFrame(draw);
+})();
+</script>

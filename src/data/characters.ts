@@ -24,7 +24,7 @@ export interface Character {
 export const characters: Character[] = [
   {
     name: "Crummock-Aye-Phail",
-    player: "thomasfisher990",
+    player: "Tom",
     race: "Half-Orc",
     class: "Warlock",
     subclass: "The Genie",
@@ -40,11 +40,12 @@ export const characters: Character[] = [
     quote: "Add a memorable quote here.",
     classSlug: "warlock",
     icon: "🌪️",
+    image: "/characters/crummock.jpg",
     status: "active",
   },
   {
     name: "Galahad",
-    player: "Bubba02807",
+    player: "Ross",
     race: "Minotaur",
     class: "Paladin / Warlock",
     subclass: "Oath of Vengeance · The Hexblade",
@@ -64,7 +65,7 @@ export const characters: Character[] = [
   },
   {
     name: "Gerald",
-    player: "Boundy30",
+    player: "Bound",
     race: "Goliath",
     class: "Barbarian",
     subclass: "Path of the Giant",
@@ -84,7 +85,7 @@ export const characters: Character[] = [
   },
   {
     name: "Leucian",
-    player: "mikebancroft99",
+    player: "Banky",
     race: "Tiefling",
     class: "Bard / Warlock",
     subclass: "College of Lore · The Fiend",
@@ -96,7 +97,7 @@ export const characters: Character[] = [
     passiveInvestigation: 15,
     passiveInsight: 14,
     darkvision: 60,
-    bio: "Add Leucian's backstory here.",
+    bio: "A well-travelled sea dog of a bard who is bloody brilliant with a lute, bagpipes and a horn. This handsome tiefling has gone through his fair share of troubles, triumph and dismemberment. Always one with a quick wit, scathing remarks and a somewhat inflated sense of self-importance. A runaway in his youth — and still with no desire to return home to see his prick of a father. Leucian gets his kicks from spreading joy through song and performing to feed his ego, but is always ready to draw his trusty rapier or sling a few spells when in a pinch. With much left to discover and remember, there is still a long road for Leucian to travel.",
     quote: "Add a memorable quote here.",
     classSlug: "bard",
     icon: "🎵",
@@ -105,7 +106,7 @@ export const characters: Character[] = [
   },
   {
     name: "Malekith",
-    player: "jbrannigan144",
+    player: "Branny",
     race: "Shadar-kai",
     class: "Fighter",
     subclass: "Psi Warrior",
@@ -121,11 +122,12 @@ export const characters: Character[] = [
     quote: "She sees the signs. I make sure she lives long enough to follow them.",
     classSlug: "fighter",
     icon: "🧠",
+    image: "/characters/malekith.jpg",
     status: "active",
   },
   {
     name: "Mephiston",
-    player: "Azmodius1",
+    player: "Aiden",
     race: "Lizardfolk",
     class: "Wizard",
     subclass: "School of Evocation",
@@ -145,7 +147,7 @@ export const characters: Character[] = [
   },
   {
     name: "Morg (Morgarth)",
-    player: "RoseAlpha",
+    player: "Chloe",
     race: "Shadar-kai",
     class: "Cleric",
     subclass: "Grave Domain",
@@ -162,11 +164,12 @@ export const characters: Character[] = [
     quote: "The Raven Queen speaks through signs. I merely follow where fate points.",
     classSlug: "cleric",
     icon: "💀",
+    image: "/characters/morg.jpg",
     status: "active",
   },
   {
     name: "Nyx",
-    player: "Mugert",
+    player: "Stuart",
     race: "Wood Elf",
     class: "Rogue / Ranger",
     subclass: "Assassin · Gloom Stalker",
@@ -187,7 +190,7 @@ export const characters: Character[] = [
   },
   {
     name: "Taman",
-    player: "The_Bushmonkey",
+    player: "Bush",
     race: "Variant Human",
     class: "Monk",
     subclass: "Way of the Drunken Master",
@@ -207,7 +210,7 @@ export const characters: Character[] = [
   },
   {
     name: "Thalara",
-    player: "Tanyamiles1992",
+    player: "Tanya",
     race: "Centaur",
     class: "Ranger",
     subclass: "Fey Wanderer",
@@ -218,8 +221,8 @@ export const characters: Character[] = [
     passivePerception: 13,
     passiveInvestigation: 12,
     passiveInsight: 13,
-    bio: "Add Thalara's backstory here.",
-    quote: "Add a memorable quote here.",
+    bio: "Born into the noble Swiftstride clan of centaurs in Ehlonna's Vale, Thalara was raised by legendary parents — her mother Lady Sylenna, a graceful tactician, and her father Lord Eryndor, a master tracker whose prized crossbow never missed. At sixteen, an orc warband led by Grommak the Bloodthirsty ambushed their patrol. Her parents were killed before her eyes, her father's crossbow torn from his dying hands. Captured and held for months, Thalara endured and escaped, leaving devastation in her wake. She returned to find her clan's village swallowed by roots and ruin. Now she hunts Grommak, seeking allies, vengeance, and the crossbow that was her father's last pride. Around her neck she wears her mother's silver locket, inscribed in Elvish: 'For Aelindra — our light in the forest. Always.' She has no idea who Aelindra is. She keeps it because it was her mother's, because it is beautiful, and because holding it makes her feel safe and desperately sad in equal measure.",
+    quote: "The dragon was corrupted. We freed it. Not everything has to end in fire.",
     classSlug: "ranger",
     icon: "🏹",
     image: "/characters/thalara.jpg",
@@ -227,7 +230,7 @@ export const characters: Character[] = [
   },
   {
     name: "Trelyn",
-    player: "Mugert",
+    player: "Elisha",
     race: "Fairy",
     class: "Druid",
     subclass: "Circle of the Moon",
@@ -245,9 +248,28 @@ export const characters: Character[] = [
     image: "/characters/trelyn.jpg",
     status: "active",
   },
+  {
+    name: "God",
+    player: "Tyke",
+    race: "Omniscient",
+    class: "Dungeon Master",
+    level: 20,
+    hp: 999,
+    maxHp: 999,
+    ac: 30,
+    passivePerception: 30,
+    passiveInvestigation: 30,
+    passiveInsight: 30,
+    bio: "The architect of every ambush, every cursed artefact, every NPC who definitely isn't suspicious. Tyke built the world the Motley Marauders stumble through — the temples, the bounties, the dragon, the mansion with the piano puzzle nobody asked for. Rolls dice behind a screen. The screen lies.",
+    quote: "Add a memorable quote here.",
+    classSlug: "dm",
+    icon: "👁️",
+    image: "/characters/tyke.jpg",
+    status: "active",
+  },
 ];
 
-// Boblin — party companion / NPC
+// Party companions / NPCs
 export const companions = [
   {
     name: "Boblin",
@@ -255,5 +277,12 @@ export const companions = [
     image: "/characters/boblin.jpg",
     description: "Kicked out of his goblin clan for being too nice and bad at stealing — he later proved them wrong by becoming very good at stealing. Captured during a raid by Mephiston the lizardfolk wizard, what should have been an enemy encounter became something else entirely. Mephiston became Boblin's protector and father figure. He adventures because heroes get treasure, but mostly because heroes protect the people they love. Does not trust tieflings. Checks his pockets if one smiles at him.",
     quote: "You hurt wizard dad. Boblin stop being funny now.",
+  },
+  {
+    name: "Bucky",
+    type: "Companion · Steed",
+    image: "/characters/bucky.jpg",
+    description: "Galahad's faithful companion and steed. Where the minotaur paladin goes, Bucky follows — whether that's into battle, across open plains, or somewhere neither of them should probably be.",
+    quote: undefined,
   },
 ];

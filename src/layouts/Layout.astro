@@ -37,9 +37,8 @@ const navLinks = [
 
         <!-- Logo -->
         <a href="/" class="flex items-center gap-3 group no-underline">
-          <span class="text-2xl torch-flicker">⚔️</span>
           <div>
-            <div class="font-cinzel-decorative text-gold text-sm font-bold leading-tight text-glow-gold" style="font-family: 'Cinzel Decorative', serif; color: #c9a227;">
+            <div class="font-cinzel-decorative text-gold text-sm font-bold leading-tight text-glow-gold" style="font-family: 'Cinzel Decorative', serif; color: #f0c040;">
               The Motley
             </div>
             <div class="font-cinzel-decorative text-gold-light text-base font-bold leading-tight" style="font-family: 'Cinzel Decorative', serif; color: #f0c040;">
@@ -95,11 +94,81 @@ const navLinks = [
         <p class="font-cinzel text-xs tracking-widest uppercase" style="color: #6b5a3e; font-family: 'Cinzel', serif;">
           Chronicles of the Motley Marauders &bull; May the dice ever roll in your favour
         </p>
-        <p class="text-xs mt-2" style="color: #3d2e18;">
-          ⚔️ &nbsp; Adventuring since Session One &nbsp; ⚔️
-        </p>
       </div>
     </footer>
 
+    <!-- Back to top -->
+    <button id="back-to-top" aria-label="Back to top" style="
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 99;
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      background: rgba(26,18,8,0.92);
+      border: 1px solid #c9a227;
+      color: #c9a227;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 0.3s ease, transform 0.3s ease, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+      backdrop-filter: blur(6px);
+    ">
+      <!-- Ornate broadhead arrowhead pointing up -->
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <!-- Outer broadhead with swept barbs -->
+        <path d="M12 2 L19 13 L15 11.5 L14.5 17.5 L12 16 L9.5 17.5 L9 11.5 L5 13 Z"/>
+        <!-- Decorative centre ridge -->
+        <path d="M12 5.5 L12 15.5" stroke="rgba(13,10,7,0.45)" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <!-- Small ornate tang notch at base -->
+        <path d="M10.5 16.8 L12 19 L13.5 16.8" fill="currentColor"/>
+      </svg>
+    </button>
+
+    <script is:inline>
+      (function () {
+        const els = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur, .reveal-rotate');
+        if (!els.length) return;
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach(e => {
+            if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+          });
+        }, { threshold: 0.1 });
+        els.forEach(el => io.observe(el));
+      })();
+
+      // Back to top
+      (function () {
+        const btn = document.getElementById('back-to-top');
+        if (!btn) return;
+
+        window.addEventListener('scroll', () => {
+          const show = window.scrollY > 400;
+          btn.style.opacity      = show ? '1'    : '0';
+          btn.style.pointerEvents = show ? 'auto' : 'none';
+          btn.style.transform    = show ? 'translateY(0)' : 'translateY(8px)';
+        }, { passive: true });
+
+        btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        btn.addEventListener('mouseenter', () => {
+          btn.style.color       = '#f0c040';
+          btn.style.borderColor = '#f0c040';
+          btn.style.transform   = 'translateY(-3px)';
+          btn.style.boxShadow   = '0 0 18px rgba(201,162,39,0.35), 0 4px 14px rgba(0,0,0,0.4)';
+        });
+        btn.addEventListener('mouseleave', () => {
+          btn.style.color       = '#c9a227';
+          btn.style.borderColor = '#c9a227';
+          btn.style.transform   = 'translateY(0)';
+          btn.style.boxShadow   = 'none';
+        });
+      })();
+    </script>
   </body>
 </html>
