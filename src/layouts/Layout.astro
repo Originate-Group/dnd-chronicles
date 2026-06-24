@@ -8,7 +8,7 @@ interface Props {
 
 const { title, description = "Chronicles of the Motley Marauders — a D&D campaign journal" } = Astro.props;
 const currentPath = Astro.url.pathname;
-const ogImage = `${Astro.url.origin}/great-protector.jpg`;
+const ogImage = `${Astro.site}great-protector.jpg`;
 
 const navLinks = [
   { href: '/', label: 'Home' },
