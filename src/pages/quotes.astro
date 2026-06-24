@@ -148,12 +148,17 @@ function findSpeakerSubtitle(name: string): string | undefined {
       <p style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">By Speaker:</p>
       {Object.keys(bySpeaker).map(speaker => {
         const slug = speakerClass[speaker] || 'fighter';
+        const subtitle = findSpeakerSubtitle(speaker);
+        const label = subtitle ?? speaker.split(' ')[0];
+        const customStyle = subtitle
+          ? "font-family:'Cinzel',serif; font-size:0.7rem; padding:0.2rem 0.6rem; border:1px solid #6ee7b7; border-radius:9999px; text-decoration:none; cursor:pointer; color:#6ee7b7;"
+          : "font-family:'Cinzel',serif; font-size:0.7rem; padding:0.2rem 0.6rem; border:1px solid; border-radius:9999px; text-decoration:none; cursor:pointer;";
         return (
           <a href={`#${speaker.toLowerCase().replace(/\s+/g,'-')}`}
-            class={`badge-${slug}`}
-            style="font-family:'Cinzel',serif; font-size:0.7rem; padding:0.2rem 0.6rem; border:1px solid; border-radius:9999px; text-decoration:none; cursor:pointer;"
+            class={subtitle ? '' : `badge-${slug}`}
+            style={customStyle}
           >
-            {speaker.split(' ')[0]}
+            {label}
           </a>
         );
       })}
