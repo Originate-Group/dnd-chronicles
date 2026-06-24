@@ -90,6 +90,13 @@ const navLinks = [
       <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(to right, transparent, #c9a227, transparent);"></div>
       <div style="position:absolute; bottom:0; left:0; right:0; height:3px; background:linear-gradient(to right, transparent, #c9a227, transparent);"></div>
 
+      <!-- Close button -->
+      <button id="mobile-nav-close" aria-label="Close menu" style="position:absolute; top:1.25rem; right:1.25rem; background:none; border:none; cursor:pointer; color:#c9a96e; padding:0.5rem; line-height:0;">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
       <div style="font-family:'Cinzel Decorative',serif; color:#c9a227; font-size:0.65rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:3rem; opacity:0.6;">Navigate</div>
 
       <nav style="display:flex; flex-direction:column; align-items:center; gap:2rem;">
@@ -186,6 +193,10 @@ const navLinks = [
 
         // Close when a nav link is clicked
         nav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+
+        // Close button inside overlay
+        const closeBtn = document.getElementById('mobile-nav-close');
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
       })();
 
       (function () {
