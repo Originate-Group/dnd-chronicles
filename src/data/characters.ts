@@ -138,7 +138,7 @@ export const characters: Character[] = [
     passivePerception: 16,
     passiveInvestigation: 15,
     passiveInsight: 13,
-    bio: "Add Mephiston's backstory here.",
+    bio: "A gifted Lizardfolk wizard from the swamps of Azkellion, Mephiston discovered his talent for magic at a young age and was trained as a shaman of his tribe. His connection with dragons and the arcane led him to become a Sage of the Knights of the Weave, dedicating his life to understanding and protecting the balance of magic.\n\nWhile seeking forgotten knowledge, Mephiston uncovered secrets that changed his life forever. He later awoke with no memory of what happened, only a mysterious amulet of unknown origin and fragments of a past he cannot recall.\n\nNow he travels the world in search of answers, chasing lost memories, hidden truths, and the power needed to uncover what was taken from him.",
     quote: "Add a memorable quote here.",
     classSlug: "wizard",
     icon: "🔮",
