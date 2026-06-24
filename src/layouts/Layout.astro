@@ -217,8 +217,8 @@ const navLinks = [
 
           function reset() { scale = 1; ox = 0; oy = 0; apply(true); }
 
-          // Buttons
-          wrap.querySelectorAll('.map-zoom-btn').forEach(btn => {
+          // Buttons (controls are siblings, not inside wrap)
+          wrap.parentElement.querySelectorAll('.map-zoom-btn').forEach(btn => {
             btn.addEventListener('click', e => {
               e.stopPropagation();
               const action = btn.dataset.zoom;

@@ -296,13 +296,10 @@ blockquote.dnd-quote {
   pointer-events: none;
 }
 .map-zoom-controls {
-  position: absolute;
-  bottom: 0.75rem;
-  right: 0.75rem;
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  z-index: 10;
+  flex-shrink: 0;
 }
 .map-zoom-btn {
   width: 2rem;
