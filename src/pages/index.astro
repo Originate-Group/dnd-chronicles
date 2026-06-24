@@ -627,6 +627,11 @@ const latestSession = storyUpdates[storyUpdates.length - 1];
     height: 2rem;
     font-size: 0.875rem;
   }
+  /* Remove right-side fade on mobile so card borders aren't clipped */
+  .carousel-mask {
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 8%, black 100%);
+  }
 }
 
 /* ── Hero buttons ───────────────────────────────────────── */
