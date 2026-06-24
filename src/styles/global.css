@@ -279,20 +279,13 @@ blockquote.dnd-quote {
 .map-ocean-wrap {
   position: relative;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse at 30% 60%, rgba(20,60,90,0.55) 0%, transparent 55%),
-    radial-gradient(ellipse at 75% 35%, rgba(15,50,80,0.45) 0%, transparent 50%),
-    radial-gradient(ellipse at 55% 80%, rgba(10,40,70,0.4) 0%, transparent 45%),
-    #0d1a2a;
-  background-size: 200% 200%;
-  animation: oceanDrift 12s ease-in-out infinite alternate;
+  background: #0b1a2e;
 }
-
-@keyframes oceanDrift {
-  0%   { background-position: 0% 40%; }
-  33%  { background-position: 60% 55%; }
-  66%  { background-position: 30% 70%; }
-  100% { background-position: 80% 45%; }
+.map-ocean-wrap canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 ::-webkit-scrollbar { width: 8px; }

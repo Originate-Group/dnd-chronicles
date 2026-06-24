@@ -181,6 +181,79 @@ const navLinks = [
           btn.style.boxShadow   = 'none';
         });
       })();
+
+      // Ocean wave canvas
+      (function () {
+        function initOcean(canvas) {
+          const ctx = canvas.getContext('2d');
+          const wrap = canvas.parentElement;
+
+          function resize() {
+            canvas.width  = wrap.offsetWidth;
+            canvas.height = wrap.offsetHeight;
+          }
+          resize();
+          new ResizeObserver(resize).observe(wrap);
+
+          const WAVES = [
+            { amp: 18, freq: 0.008, speed: 0.012, y: 0.25, alpha: 0.18, color: '40,100,160' },
+            { amp: 14, freq: 0.012, speed: 0.018, y: 0.42, alpha: 0.14, color: '30,80,140' },
+            { amp: 22, freq: 0.006, speed: 0.008, y: 0.58, alpha: 0.20, color: '20,60,120' },
+            { amp: 10, freq: 0.018, speed: 0.025, y: 0.72, alpha: 0.12, color: '50,110,170' },
+            { amp: 16, freq: 0.010, speed: 0.015, y: 0.88, alpha: 0.16, color: '25,70,130' },
+          ];
+
+          let t = 0;
+          function draw() {
+            const W = canvas.width, H = canvas.height;
+            ctx.clearRect(0, 0, W, H);
+
+            // Deep ocean base
+            const base = ctx.createLinearGradient(0, 0, 0, H);
+            base.addColorStop(0,   'rgba(8,20,45,0.92)');
+            base.addColorStop(0.5, 'rgba(10,28,55,0.88)');
+            base.addColorStop(1,   'rgba(6,16,38,0.95)');
+            ctx.fillStyle = base;
+            ctx.fillRect(0, 0, W, H);
+
+            // Draw each wave band
+            for (const w of WAVES) {
+              ctx.beginPath();
+              ctx.moveTo(0, H);
+              for (let x = 0; x <= W; x += 3) {
+                const y = w.y * H + Math.sin(x * w.freq + t * w.speed * 60) * w.amp
+                                   + Math.sin(x * w.freq * 1.7 + t * w.speed * 40) * (w.amp * 0.4);
+                ctx.lineTo(x, y);
+              }
+              ctx.lineTo(W, H);
+              ctx.closePath();
+
+              const grad = ctx.createLinearGradient(0, w.y * H - w.amp, 0, H);
+              grad.addColorStop(0, `rgba(${w.color},${w.alpha})`);
+              grad.addColorStop(1, `rgba(${w.color},${w.alpha * 0.3})`);
+              ctx.fillStyle = grad;
+              ctx.fill();
+
+              // Subtle crest highlight
+              ctx.beginPath();
+              for (let x = 0; x <= W; x += 3) {
+                const y = w.y * H + Math.sin(x * w.freq + t * w.speed * 60) * w.amp
+                                   + Math.sin(x * w.freq * 1.7 + t * w.speed * 40) * (w.amp * 0.4);
+                x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+              }
+              ctx.strokeStyle = `rgba(120,180,220,${w.alpha * 0.35})`;
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            }
+
+            t += 0.016;
+            requestAnimationFrame(draw);
+          }
+          draw();
+        }
+
+        document.querySelectorAll('.ocean-canvas').forEach(initOcean);
+      })();
     </script>
   </body>
 </html>
