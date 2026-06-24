@@ -275,18 +275,6 @@ blockquote.dnd-quote {
 }
 
 /* Scrollbar */
-/* ── Map ocean background ──────────────────────────────────── */
-.map-ocean-wrap {
-  position: relative;
-  overflow: hidden;
-  background: #0b1a2e;
-}
-.map-ocean-wrap canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
 
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: #0d0a07; }
