@@ -171,15 +171,16 @@ function findSpeakerSubtitle(name: string): string | undefined {
               ? <img src={findSpeakerImage(speaker)} alt={speaker} style="width:2.75rem; height:2.75rem; border-radius:50%; object-fit:cover; object-position:top; border:2px solid #3d2e18; flex-shrink:0;"/>
               : <div style="width:2.75rem; height:2.75rem; border-radius:50%; background:linear-gradient(135deg,#1a1208,#231a0e); border:2px solid #3d2e18; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;">{findSpeakerIcon(speaker) ?? '⚔'}</div>
             }
-            <div>
-              <h2 style="font-family:'Cinzel',serif; color:#f0c040; font-size:1.25rem; font-weight:700; line-height:1.2;">{speaker}</h2>
-              {findSpeakerSubtitle(speaker) && (
-                <p style="font-family:'Cinzel',serif; color:#6ee7b7; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; margin-top:0.2rem; opacity:0.85;">{findSpeakerSubtitle(speaker)}</p>
-              )}
-            </div>
-            <span class={`badge-${slug}`} style="font-family:'Cinzel',serif; font-size:0.7rem; padding:0.2rem 0.6rem; border:1px solid; border-radius:9999px;">
-              {(char as any)?.class ?? (char as any)?.type ?? ''}
-            </span>
+            <h2 style="font-family:'Cinzel',serif; color:#f0c040; font-size:1.25rem; font-weight:700;">{speaker}</h2>
+            {findSpeakerSubtitle(speaker) ? (
+              <span style="font-family:'Cinzel',serif; font-size:0.7rem; padding:0.2rem 0.6rem; border:1px solid #6ee7b7; border-radius:9999px; color:#6ee7b7; white-space:nowrap;">
+                {findSpeakerSubtitle(speaker)}
+              </span>
+            ) : (char as any)?.class || (char as any)?.type ? (
+              <span class={`badge-${slug}`} style="font-family:'Cinzel',serif; font-size:0.7rem; padding:0.2rem 0.6rem; border:1px solid; border-radius:9999px;">
+                {(char as any)?.class ?? (char as any)?.type}
+              </span>
+            ) : null}
           </div>
 
           <div style="display:grid; gap:1rem; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));">
@@ -193,7 +194,7 @@ function findSpeakerSubtitle(name: string): string | undefined {
                 <blockquote class="dnd-quote" style="margin-bottom:0.75rem;">
                   <p style="font-size:1.1rem;">"{quote.text}"</p>
                 </blockquote>
-                <p style="font-size:0.75rem; font-style:italic; color:#c9a96e; font-weight:500; line-height:1.5;">{quote.context}</p>
+                <p style="font-size:0.9rem; font-style:italic; color:#c9a96e; font-weight:500; line-height:1.6;">{quote.context}</p>
               </div>
             ))}
           </div>
