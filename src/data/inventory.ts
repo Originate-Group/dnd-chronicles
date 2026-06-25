@@ -10,6 +10,7 @@ export interface InventoryItem {
   status: ItemStatus;
   icon?: string;
   notes?: string;
+  dndBeyondUrl?: string;
 }
 
 export interface MysteriousItem {
@@ -39,6 +40,7 @@ export const magicItems: InventoryItem[] = [
     holder: 'Thalara',
     status: 'active',
     icon: '🕷',
+    dndBeyondUrl: 'https://www.dndbeyond.com/magic-items/4604-cloak-of-arachnida',
   },
   {
     name: 'Wand of Fireballs',
@@ -48,6 +50,7 @@ export const magicItems: InventoryItem[] = [
     holder: 'Mephiston',
     status: 'active',
     icon: '🔥',
+    dndBeyondUrl: 'https://www.dndbeyond.com/magic-items/4791-wand-of-fireballs',
   },
   {
     name: 'Luck Blade',
@@ -57,6 +60,7 @@ export const magicItems: InventoryItem[] = [
     holder: 'Malakith',
     status: 'active',
     icon: '⚔',
+    dndBeyondUrl: 'https://www.dndbeyond.com/magic-items/5393-luck-blade',
   },
   {
     name: 'Ring of Regeneration',
@@ -66,6 +70,7 @@ export const magicItems: InventoryItem[] = [
     holder: 'Unassigned',
     status: 'active',
     icon: '💍',
+    dndBeyondUrl: 'https://www.dndbeyond.com/magic-items/4727-ring-of-regeneration',
   },
   {
     name: 'Mace of Disruption',
@@ -75,6 +80,7 @@ export const magicItems: InventoryItem[] = [
     holder: 'Unassigned',
     status: 'active',
     icon: '🔨',
+    dndBeyondUrl: 'https://www.dndbeyond.com/magic-items/4670-mace-of-disruption',
   },
   {
     name: 'Bracers of Defence',
@@ -84,6 +90,7 @@ export const magicItems: InventoryItem[] = [
     holder: 'Unassigned',
     status: 'active',
     icon: '🛡',
+    dndBeyondUrl: 'https://www.dndbeyond.com/magic-items/4594-bracers-of-defense',
   },
   {
     name: 'Rope of Entanglement',
@@ -93,6 +100,7 @@ export const magicItems: InventoryItem[] = [
     holder: 'Unassigned',
     status: 'active',
     icon: '🪢',
+    dndBeyondUrl: 'https://www.dndbeyond.com/magic-items/4750-rope-of-entanglement',
   },
   {
     name: 'Necklace of Adaptation',
@@ -102,6 +110,7 @@ export const magicItems: InventoryItem[] = [
     holder: 'Unassigned',
     status: 'active',
     icon: '📿',
+    dndBeyondUrl: 'https://www.dndbeyond.com/magic-items/4682-necklace-of-adaptation',
   },
   {
     name: 'Ring of Water Walking',
@@ -111,6 +120,7 @@ export const magicItems: InventoryItem[] = [
     holder: 'Unassigned',
     status: 'active',
     icon: '💍',
+    dndBeyondUrl: 'https://www.dndbeyond.com/magic-items/4737-ring-of-water-walking',
   },
   {
     name: 'Ring of Protection',
@@ -120,6 +130,7 @@ export const magicItems: InventoryItem[] = [
     holder: 'Unassigned',
     status: 'active',
     icon: '💍',
+    dndBeyondUrl: 'https://www.dndbeyond.com/magic-items/4726-ring-of-protection',
   },
   {
     name: 'Nature Mantle',
@@ -139,6 +150,7 @@ export const magicItems: InventoryItem[] = [
     status: 'active',
     notes: 'x2',
     icon: '🔮',
+    dndBeyondUrl: 'https://www.dndbeyond.com/magic-items/4691-pearl-of-power',
   },
   {
     name: 'Stone of Good Luck',
@@ -148,6 +160,7 @@ export const magicItems: InventoryItem[] = [
     holder: 'Unassigned',
     status: 'active',
     icon: '🪨',
+    dndBeyondUrl: 'https://www.dndbeyond.com/magic-items/4773-stone-of-good-luck-luckstone',
   },
   {
     name: 'Ring of Intelligence',
@@ -177,6 +190,7 @@ export const magicItems: InventoryItem[] = [
     status: 'consumed',
     notes: 'Already read. Effect applied.',
     icon: '📖',
+    dndBeyondUrl: 'https://www.dndbeyond.com/magic-items/4783-tome-of-understanding',
   },
 ];
 
