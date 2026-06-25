@@ -271,9 +271,9 @@ export const mysteriousItems: MysteriousItem[] = [
 ];
 
 export const generalItems: GeneralItem[] = [
-{ name: 'Gunpowder',          quantity: '1lb', holder: 'Party (Bag of Holding)', notes: 'Excluded from Tiberick\'s Arcane Express routes.', icon: '💣' },
-  { name: 'Holy Water',         quantity: '1',  holder: 'Party (Bag of Holding)', icon: '🫙' },
-  { name: 'Mead (Very Nice)',   quantity: '3',  holder: 'Party (Bag of Holding)', icon: '🍺' },
-  { name: 'Sea Serpent Scales', quantity: '17', holder: 'Party (Bag of Holding)', icon: '🐍' },
-  { name: 'Regal Clothes',      quantity: '1 set', holder: 'Party (Bag of Holding)', icon: '👑' },
+  { name: 'Gunpowder',          quantity: '1lb',   holder: 'Party (Bag of Holding)', notes: 'Excluded from Tiberick\'s Arcane Express routes.' },
+  { name: 'Holy Water',         quantity: '1',     holder: 'Party (Bag of Holding)' },
+  { name: 'Mead (Very Nice)',   quantity: '3',     holder: 'Party (Bag of Holding)' },
+  { name: 'Sea Serpent Scales', quantity: '17',    holder: 'Party (Bag of Holding)' },
+  { name: 'Regal Clothes',      quantity: '1 set', holder: 'Party (Bag of Holding)' },
 ];
