@@ -271,8 +271,7 @@ export const mysteriousItems: MysteriousItem[] = [
 ];
 
 export const generalItems: GeneralItem[] = [
-  { name: 'Scroll of Dispel Magic', quantity: '1', holder: 'Unassigned', notes: 'Given by Crowley as good faith.', icon: '📜' },
-  { name: 'Gunpowder',          quantity: '1lb', holder: 'Party (Bag of Holding)', notes: 'Excluded from Tiberick\'s Arcane Express routes.', icon: '💣' },
+{ name: 'Gunpowder',          quantity: '1lb', holder: 'Party (Bag of Holding)', notes: 'Excluded from Tiberick\'s Arcane Express routes.', icon: '💣' },
   { name: 'Holy Water',         quantity: '1',  holder: 'Party (Bag of Holding)', icon: '🫙' },
   { name: 'Mead (Very Nice)',   quantity: '3',  holder: 'Party (Bag of Holding)', icon: '🍺' },
   { name: 'Sea Serpent Scales', quantity: '17', holder: 'Party (Bag of Holding)', icon: '🐍' },
