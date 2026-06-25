@@ -127,6 +127,26 @@ const iconMap: Record<string, string> = {
       <div style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:2.5rem; font-weight:700; line-height:1;">{partyGold.toLocaleString()} <span style="font-size:1.2rem; color:#c9a227;">gp</span></div>
     </div>
 
+    <!-- ── Search ─────────────────────────────────────────────── -->
+    <div style="margin-bottom:2.5rem; position:relative; max-width:36rem;">
+      <span style="position:absolute; left:0.75rem; top:50%; transform:translateY(-50%); color:#6b5a3e; pointer-events:none; display:flex;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/>
+        </svg>
+      </span>
+      <input
+        id="inv-search"
+        type="search"
+        placeholder="Search items, holders, descriptions..."
+        autocomplete="off"
+        style="width:100%; background:#1a1208; border:1px solid #3d2e18; color:#c9a96e; font-family:'IM Fell English',serif; font-size:0.9rem; padding:0.6rem 1rem 0.6rem 2.25rem; outline:none; transition:border-color 0.2s; box-sizing:border-box;"
+      />
+      <div id="inv-results-panel" class="inv-results-panel" hidden>
+        <div id="inv-results-header" class="inv-results-header"></div>
+        <div id="inv-results-list" class="inv-results-list"></div>
+      </div>
+    </div>
+
     <!-- ── General Items ───────────────────────────────────── -->
     <section class="reveal" style="margin-bottom:4rem;">
       <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; border-bottom:1px solid #3d2e18; padding-bottom:1rem;">
@@ -329,9 +349,178 @@ const iconMap: Record<string, string> = {
   })();
   </script>
 
+  <script define:vars={{ searchData: [
+    ...magicItems.map(i => ({ name: i.name, section: 'Magic Items', description: i.description, holder: i.holder, notes: i.notes ?? '', type: i.type, rarity: i.rarity })),
+    ...mysteriousItems.map(i => ({ name: i.name, section: "Theodas' Loot", description: i.description, holder: i.holder ?? 'Unassigned', notes: i.notes ?? '', type: '', rarity: '' })),
+    ...generalItems.map(i => ({ name: i.name, section: 'General Items', description: '', holder: i.holder, notes: i.notes ?? '', type: '', rarity: '' })),
+  ]}} is:inline>
+  (function () {
+    const input  = document.getElementById('inv-search');
+    const panel  = document.getElementById('inv-results-panel');
+    const header = document.getElementById('inv-results-header');
+    const list   = document.getElementById('inv-results-list');
+    if (!input || !panel || !header || !list) return;
+
+    input.addEventListener('focus', () => input.style.borderColor = '#c9a227');
+    input.addEventListener('blur',  () => input.style.borderColor = '#3d2e18');
+    document.addEventListener('click', e => {
+      if (!input.parentElement.contains(e.target)) panel.hidden = true;
+    });
+    input.addEventListener('input', runSearch);
+
+    function getSnippet(text, query) {
+      if (!text) return null;
+      const idx = text.toLowerCase().indexOf(query.toLowerCase());
+      if (idx === -1) return null;
+      const start = Math.max(0, idx - 60);
+      const end   = Math.min(text.length, idx + query.length + 60);
+      let s = text.slice(start, end).replace(/\s+/g, ' ').trim();
+      if (start > 0) s = '…' + s;
+      if (end < text.length) s += '…';
+      return s;
+    }
+
+    function matches(item, q) {
+      const fields = [item.name, item.description, item.holder, item.notes, item.type, item.rarity];
+      return fields.some(f => f && f.toLowerCase().includes(q));
+    }
+
+    function runSearch() {
+      const raw = input.value.trim();
+      list.innerHTML = '';
+      if (!raw) { panel.hidden = true; return; }
+      const q = raw.toLowerCase();
+
+      const results = searchData.filter(item => matches(item, q));
+
+      if (!results.length) {
+        header.textContent = 'No items found';
+        panel.hidden = false;
+        return;
+      }
+
+      header.textContent = results.length + ' item' + (results.length === 1 ? '' : 's') + ' found';
+
+      results.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'inv-result-item';
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'inv-result-name';
+        nameEl.textContent = item.name;
+
+        const meta = document.createElement('div');
+        meta.className = 'inv-result-meta';
+
+        const sec = document.createElement('span');
+        sec.className = 'inv-result-section';
+        sec.textContent = item.section;
+        meta.appendChild(sec);
+
+        if (item.holder && item.holder !== 'Unassigned') {
+          const holder = document.createElement('span');
+          holder.className = 'inv-result-holder';
+          holder.textContent = item.holder;
+          meta.appendChild(holder);
+        }
+
+        btn.appendChild(nameEl);
+        btn.appendChild(meta);
+
+        const snippet = getSnippet(item.description || item.notes, raw);
+        if (snippet) {
+          const snipEl = document.createElement('div');
+          snipEl.className = 'inv-result-snippet';
+          snipEl.textContent = snippet;
+          btn.appendChild(snipEl);
+        }
+
+        btn.addEventListener('click', () => { panel.hidden = true; input.value = ''; });
+        list.appendChild(btn);
+      });
+
+      panel.hidden = false;
+    }
+  })();
+  </script>
+
 </Layout>
 
 <style>
+/* ── Search results panel ───────────────────────────────── */
+.inv-results-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #120e08;
+  border: 1px solid #c9a227;
+  z-index: 100;
+  max-height: clamp(200px, 60vh, 420px);
+  overflow-y: auto;
+  text-align: left;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+}
+.inv-results-header {
+  padding: 0.5rem 1rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9a8060;
+  font-weight: 600;
+  border-bottom: 2px solid #3d2e18;
+  background: #0d0a07;
+}
+.inv-results-list { display: flex; flex-direction: column; }
+.inv-result-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #2a1f0f;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.inv-result-item:last-child { border-bottom: none; }
+.inv-result-item:hover { background: rgba(201,162,39,0.07); }
+.inv-result-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #f0c040;
+  margin-bottom: 0.25rem;
+}
+.inv-result-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.25rem;
+}
+.inv-result-section {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #c9a227;
+  border: 1px solid #3d2e18;
+  padding: 0.05rem 0.4rem;
+}
+.inv-result-holder {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: #6b5a3e;
+}
+.inv-result-snippet {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.8rem;
+  color: #7a6045;
+  line-height: 1.5;
+}
+
 /* ── Carousel layout ─────────────────────────────────────── */
 .inv-carousel-outer {
   display: flex;
