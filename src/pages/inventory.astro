@@ -1,0 +1,156 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { magicItems, mysteriousItems } from '../data/inventory';
+
+const activeItems  = magicItems.filter(i => i.status === 'active');
+const usedItems    = magicItems.filter(i => i.status !== 'active');
+
+const rarityColour: Record<string, string> = {
+  'Common':    '#9a8060',
+  'Uncommon':  '#6ee7b7',
+  'Rare':      '#60a5fa',
+  'Very Rare': '#c084fc',
+  'Legendary': '#f0c040',
+  'Unknown':   '#9a8060',
+};
+---
+
+<Layout title="Party Inventory" description="Everything the Motley Marauders have looted, identified, and probably argued over.">
+
+  <!-- Page header -->
+  <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18; position:relative; overflow:hidden;">
+
+    <!-- Dungeon — right side (desktop) -->
+    <div class="header-deco-img" style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+      <img
+        src="/dungeon.jpg"
+        alt=""
+        style="width:100%; height:100%; object-fit:cover; object-position:center top; opacity:0.65; mask-image:linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%); -webkit-mask-image:linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);"
+      />
+    </div>
+
+    <!-- Library — left side (desktop) -->
+    <div class="header-deco-img" style="position:absolute; left:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+      <img
+        src="/library.jpg"
+        alt=""
+        style="width:100%; height:100%; object-fit:cover; object-position:center top; opacity:0.65; mask-image:linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%); -webkit-mask-image:linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);"
+      />
+    </div>
+
+    <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:1rem; position:relative; z-index:1;">What We've Plundered</p>
+    <h1 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:clamp(2rem,5vw,3.5rem); font-weight:700; position:relative; z-index:1;" class="text-glow-gold">
+      Party Inventory
+    </h1>
+    <div class="rune-divider" style="max-width:16rem; margin:1.5rem auto 0; position:relative; z-index:1;"></div>
+    <p style="color:#c9a96e; font-style:italic; margin-top:1rem; max-width:40rem; margin-left:auto; margin-right:auto; position:relative; z-index:1;">
+      Everything looted, identified, and probably argued over. Allocation of some items remains an ongoing discussion.
+    </p>
+  </div>
+
+  <div style="max-width:72rem; margin:0 auto; padding:4rem 1rem;">
+
+    <!-- Magic Items -->
+    <section class="reveal">
+      <div style="text-align:center; margin-bottom:2.5rem;">
+        <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.3em; text-transform:uppercase; margin-bottom:0.5rem;">Identified & In Use</p>
+        <h2 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:1.75rem; font-weight:700;">Magic Items</h2>
+      </div>
+
+      <div style="display:grid; gap:1rem; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));">
+        {activeItems.map((item, i) => (
+          <div class="parchment-card reveal-scale" style={`padding:1.25rem; position:relative; transition-delay:${i * 0.05}s;`}>
+            <div style="display:flex; align-items:flex-start; gap:0.75rem; margin-bottom:0.75rem;">
+              <span style="font-size:1.4rem; line-height:1; flex-shrink:0;">{item.icon ?? '✦'}</span>
+              <div style="flex:1; min-width:0;">
+                <h3 style="font-family:'Cinzel',serif; color:#f0c040; font-size:0.95rem; font-weight:700; margin-bottom:0.2rem;">{item.name}</h3>
+                <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                  <span style={`font-family:'Cinzel',serif; font-size:0.65rem; padding:0.15rem 0.5rem; border:1px solid ${rarityColour[item.rarity]}; border-radius:9999px; color:${rarityColour[item.rarity]};`}>{item.rarity}</span>
+                  <span style="font-family:'Cinzel',serif; font-size:0.65rem; color:#6b5a3e; text-transform:uppercase; letter-spacing:0.05em;">{item.type}</span>
+                </div>
+              </div>
+            </div>
+            <p style="font-size:0.875rem; color:#c9a96e; line-height:1.6;">{item.description}</p>
+            {item.notes && (
+              <p style="font-size:0.8rem; font-style:italic; color:#9a8060; margin-top:0.5rem;">{item.notes}</p>
+            )}
+            {item.holder && (
+              <p style="font-family:'Cinzel',serif; font-size:0.7rem; color:#c9a227; margin-top:0.75rem; text-transform:uppercase; letter-spacing:0.05em;">Held by: {item.holder}</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Consumed / Lost -->
+    {usedItems.length > 0 && (
+      <section class="reveal" style="margin-top:3rem;">
+        <h3 style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:0.8rem; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:1rem;">Used / Consumed</h3>
+        <div style="display:grid; gap:0.75rem; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));">
+          {usedItems.map(item => (
+            <div class="parchment-card" style="padding:1rem; opacity:0.5;">
+              <div style="display:flex; align-items:center; gap:0.75rem;">
+                <span style="font-size:1.2rem;">{item.icon ?? '✦'}</span>
+                <div>
+                  <h3 style="font-family:'Cinzel',serif; color:#9a8060; font-size:0.875rem; font-weight:700; text-decoration:line-through;">{item.name}</h3>
+                  {item.notes && <p style="font-size:0.8rem; color:#6b5a3e; font-style:italic;">{item.notes}</p>}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Divider -->
+    <div style="margin:4rem 0; border-top:1px solid #3d2e18; position:relative;">
+      <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:#0d0a07; padding:0 1rem;">
+        <span style="font-family:'Cinzel Decorative',serif; color:#c9a227; font-size:0.7rem; letter-spacing:0.3em; text-transform:uppercase;">Theodas' Treasure Room</span>
+      </div>
+    </div>
+
+    <!-- Mysterious Items -->
+    <section class="reveal">
+      <div style="text-align:center; margin-bottom:2.5rem;">
+        <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.3em; text-transform:uppercase; margin-bottom:0.5rem;">Origin & Purpose Unknown</p>
+        <h2 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:1.75rem; font-weight:700;">The Mysterious Items</h2>
+        <p style="color:#c9a96e; font-style:italic; margin-top:0.75rem; max-width:36rem; margin-left:auto; margin-right:auto; font-size:0.9rem;">
+          Twelve sealed cases recovered from Theodas' treasure room. Some have already made their presence felt.
+        </p>
+      </div>
+
+      <div style="display:grid; gap:1rem; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));">
+        {mysteriousItems.map((item, i) => {
+          const isActive = item.holder && (item.holder.includes('shadow') || item.holder.includes('Lucian'));
+          return (
+            <div class="parchment-card reveal-scale" style={`padding:1.25rem; border-color:${isActive ? '#c9a227' : '#3d2e18'}; transition-delay:${i * 0.05}s; ${isActive ? 'border-top:2px solid #c9a227;' : ''}`}>
+              <div style="display:flex; align-items:flex-start; gap:0.75rem; margin-bottom:0.75rem;">
+                <span style="font-size:1.4rem; line-height:1; flex-shrink:0;">{item.icon ?? '✦'}</span>
+                <div>
+                  <h3 style="font-family:'Cinzel',serif; color:#e8d5b0; font-size:0.95rem; font-weight:700;">{item.name}</h3>
+                  {item.holder && (
+                    <p style="font-family:'Cinzel',serif; font-size:0.65rem; color:#c9a227; text-transform:uppercase; letter-spacing:0.05em; margin-top:0.15rem;">{item.holder}</p>
+                  )}
+                </div>
+              </div>
+              <p style="font-size:0.875rem; color:#c9a96e; line-height:1.6;">{item.description}</p>
+              {item.notes && (
+                <p style="font-size:0.8rem; font-style:italic; color:#9a8060; margin-top:0.5rem; border-left:2px solid #3d2e18; padding-left:0.5rem;">{item.notes}</p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+  </div>
+
+</Layout>
+
+<style>
+@media (max-width: 640px) {
+  .header-deco-img { display: none; }
+  .deco-mobile-show { display: block !important; width: 55vw; }
+  .deco-mobile-show img { opacity: 0.3 !important; }
+}
+</style>
