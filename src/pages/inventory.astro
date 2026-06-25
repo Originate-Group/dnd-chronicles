@@ -191,7 +191,7 @@ const iconMap: Record<string, string> = {
           <p style="font-family:'Cinzel',serif; color:#6b5a3e; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:0.6rem;">Consumed</p>
           <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
             {usedItems.map(item => (
-              <div class="parchment-card" style="padding:0.6rem 1rem; opacity:0.4; display:flex; align-items:center; gap:0.5rem;">
+              <div class="parchment-card" style="padding:0.6rem 1rem; opacity:0.65; display:flex; align-items:center; gap:0.5rem;">
                 <span style="font-family:'Cinzel',serif; color:#9a8060; font-size:0.8rem; text-decoration:line-through;">{item.name}</span>
                 {item.notes && <span style="font-size:0.72rem; color:#6b5a3e; font-style:italic;">— {item.notes}</span>}
               </div>
@@ -413,10 +413,10 @@ const iconMap: Record<string, string> = {
 /* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .header-deco-img { display: none; }
-  .inv-card { width: clamp(140px, 42vw, 180px); }
+  .inv-card { width: calc(100vw - 9rem); }
   .inv-carousel-mask {
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 100%);
-    mask-image: linear-gradient(to right, transparent 0%, black 8%, black 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 4%, black 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 4%, black 100%);
   }
 }
 </style>
