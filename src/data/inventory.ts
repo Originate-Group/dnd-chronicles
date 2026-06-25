@@ -271,16 +271,6 @@ export const mysteriousItems: MysteriousItem[] = [
 ];
 
 export const generalItems: GeneralItem[] = [
-  { name: 'Healing Potion',       quantity: '?',  holder: 'Unassigned', icon: '🧪' },
-  { name: 'Greater Healing Potion', quantity: '?', holder: 'Unassigned', icon: '🧪' },
-  { name: 'Rope (50ft)',          quantity: '?',  holder: 'Unassigned', icon: '🪢' },
-  { name: 'Torch',               quantity: '?',  holder: 'Unassigned', icon: '🔦' },
-  { name: 'Rations (days)',      quantity: '?',  holder: 'Unassigned', icon: '🎒' },
-  { name: 'Thieves\' Tools',     quantity: '?',  holder: 'Unassigned', icon: '🔑' },
-  { name: 'Tinderbox',           quantity: '?',  holder: 'Unassigned', icon: '📦' },
-  { name: 'Crowbar',             quantity: '?',  holder: 'Unassigned', icon: '🔧' },
-  { name: 'Grappling Hook',      quantity: '?',  holder: 'Unassigned', icon: '⚓' },
-  { name: 'Antitoxin',          quantity: '?',  holder: 'Unassigned', icon: '💊' },
   { name: 'Scroll of Dispel Magic', quantity: '1', holder: 'Unassigned', notes: 'Given by Crowley as good faith.', icon: '📜' },
   { name: 'Gunpowder',          quantity: '1lb', holder: 'Party (Bag of Holding)', notes: 'Excluded from Tiberick\'s Arcane Express routes.', icon: '💣' },
   { name: 'Holy Water',         quantity: '1',  holder: 'Party (Bag of Holding)', icon: '🫙' },
