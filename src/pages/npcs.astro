@@ -1,0 +1,170 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { npcs, type Disposition } from '../data/npcs';
+
+const dispositionColour: Record<Disposition, string> = {
+  friendly:   '#6ee7b7',
+  neutral:    '#c9a227',
+  mysterious: '#c084fc',
+  hostile:    '#e0726c',
+};
+
+const dispositionLabel: Record<Disposition, string> = {
+  friendly:   'Friendly',
+  neutral:    'Neutral',
+  mysterious: 'Mysterious',
+  hostile:    'Hostile',
+};
+
+// Stable display order: friendly → neutral → mysterious → hostile, then by name
+const order: Disposition[] = ['friendly', 'neutral', 'mysterious', 'hostile'];
+const sorted = [...npcs].sort(
+  (a, b) => order.indexOf(a.disposition) - order.indexOf(b.disposition) || a.name.localeCompare(b.name)
+);
+---
+
+<Layout title="Faces of the Realm" description="Friends, foes and folk of note — every merchant, monk, miscreant and mystery the Motley Marauders have crossed.">
+
+  <!-- Page header -->
+  <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18; position:relative; overflow:hidden;">
+
+    <div class="header-deco-img" style="position:absolute; left:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+      <img src="/goblin-village.jpg" alt="" style="width:100%; height:100%; object-fit:cover; object-position:center top; opacity:0.5; mask-image:linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%); -webkit-mask-image:linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);"/>
+    </div>
+    <div class="header-deco-img" style="position:absolute; right:0; bottom:0; top:0; width:clamp(180px,28vw,360px); pointer-events:none; z-index:0;">
+      <img src="/library.jpg" alt="" style="width:100%; height:100%; object-fit:cover; object-position:center top; opacity:0.5; mask-image:linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%); -webkit-mask-image:linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);"/>
+    </div>
+
+    <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:1rem; position:relative; z-index:1;">Friends, Foes &amp; Folk</p>
+    <h1 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:clamp(2rem,5vw,3.5rem); font-weight:700; position:relative; z-index:1;" class="text-glow-gold">Faces of the Realm</h1>
+    <div class="rune-divider" style="max-width:16rem; margin:1.5rem auto 0; position:relative; z-index:1;"></div>
+    <p style="color:#c9a96e; font-style:italic; margin-top:1rem; max-width:42rem; margin-left:auto; margin-right:auto; position:relative; z-index:1;">
+      Every merchant, monk, miscreant and mystery the Marauders have crossed — who they are, where to find them, and whether to trust them.
+    </p>
+  </div>
+
+  <div style="max-width:72rem; margin:0 auto; padding:3rem 1rem 4rem;">
+
+    <!-- ── Search ─────────────────────────────────────────────── -->
+    <div style="margin:0 auto 1.25rem; position:relative; max-width:36rem;">
+      <span style="position:absolute; left:0.75rem; top:50%; transform:translateY(-50%); color:#6b5a3e; pointer-events:none; display:flex;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/>
+        </svg>
+      </span>
+      <input
+        id="npc-search"
+        type="search"
+        placeholder="Search a name, town, profession or vibe…"
+        autocomplete="off"
+        style="width:100%; background:#1a1208; border:1px solid #3d2e18; color:#c9a96e; font-family:'IM Fell English',serif; font-size:0.9rem; padding:0.6rem 1rem 0.6rem 2.25rem; outline:none; transition:border-color 0.2s; box-sizing:border-box;"
+      />
+    </div>
+
+    <!-- Legend + count -->
+    <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:0.75rem 1.25rem; margin-bottom:2.5rem;">
+      {order.map(d => (
+        <span style="display:inline-flex; align-items:center; gap:0.4rem; font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.05em; text-transform:uppercase; color:#9a8060;">
+          <span style={`width:0.6rem; height:0.6rem; border-radius:50%; background:${dispositionColour[d]};`}></span>{dispositionLabel[d]}
+        </span>
+      ))}
+      <span id="npc-count" style="font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.05em; text-transform:uppercase; color:#6b5a3e; margin-left:auto;">{sorted.length} of note</span>
+    </div>
+
+    <!-- ── Card grid ──────────────────────────────────────────── -->
+    <div id="npc-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr)); gap:1.5rem;">
+      {sorted.map((npc, i) => {
+        const colour = dispositionColour[npc.disposition];
+        const search = [npc.name, npc.location, npc.profession, dispositionLabel[npc.disposition], npc.vibe, npc.note, npc.status ?? '']
+          .join(' ').toLowerCase();
+        return (
+          <article
+            class="parchment-card npc-card reveal"
+            data-search={search}
+            data-disposition={npc.disposition}
+            style={`overflow:hidden; display:flex; flex-direction:column; border-top:2px solid ${colour}; transition:border-color 0.2s, transform 0.2s; transition-delay:${Math.min(i, 12) * 0.03}s;`}
+          >
+            <!-- Portrait / placeholder -->
+            <div style="position:relative; aspect-ratio:4/3; overflow:hidden; border-bottom:1px solid #3d2e18; background:radial-gradient(circle at 50% 35%, #241a0e 0%, #150f08 100%);">
+              {npc.image ? (
+                <img src={npc.image} alt={npc.name} style="width:100%; height:100%; object-fit:cover; object-position:center top;" />
+              ) : (
+                <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+                  <span style={`font-family:'Cinzel Decorative',serif; font-weight:700; font-size:2.8rem; color:${colour}; opacity:0.5; text-shadow:0 0 24px ${colour}55;`}>{npc.name.replace(/^The\s+/i, '').charAt(0)}</span>
+                </div>
+              )}
+              {npc.status === 'deceased' && (
+                <span style="position:absolute; top:0.5rem; right:0.5rem; font-family:'Cinzel',serif; font-size:0.55rem; letter-spacing:0.12em; text-transform:uppercase; color:#e0726c; border:1px solid #e0726c66; background:rgba(13,10,7,0.75); padding:0.12rem 0.45rem; border-radius:9999px;">Deceased</span>
+              )}
+              <span style={`position:absolute; bottom:0.5rem; left:0.5rem; font-family:'Cinzel',serif; font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; color:${colour}; border:1px solid ${colour}55; background:rgba(13,10,7,0.7); padding:0.12rem 0.45rem; border-radius:9999px;`}>{dispositionLabel[npc.disposition]}</span>
+            </div>
+
+            <!-- Body -->
+            <div style="padding:1.1rem 1.25rem 1.35rem; display:flex; flex-direction:column; flex:1;">
+              <h2 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:1.05rem; font-weight:700; line-height:1.25; margin-bottom:0.25rem;">{npc.name}</h2>
+              <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:0.6rem;">{npc.profession}</p>
+
+              <div style="display:flex; align-items:flex-start; gap:0.4rem; margin-bottom:0.65rem; color:#9a8060;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:0.15rem;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span style="font-family:'IM Fell English',serif; font-size:0.85rem; line-height:1.4;">{npc.location}</span>
+              </div>
+
+              <p style={`font-style:italic; font-size:0.8rem; color:${colour}; margin-bottom:0.65rem; opacity:0.95;`}>“{npc.vibe}”</p>
+              <p style="font-size:0.84rem; color:#c9a96e; line-height:1.55;">{npc.note}</p>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+
+    <!-- No results -->
+    <div id="npc-empty" hidden style="text-align:center; padding:4rem 1rem; color:#6b5a3e;">
+      <p style="font-family:'Cinzel Decorative',serif; font-size:1.3rem; color:#9a8060; margin-bottom:0.5rem;">No such soul on record</p>
+      <p style="font-style:italic; font-family:'IM Fell English',serif;">Try another name, town or trade.</p>
+    </div>
+
+  </div>
+
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('npc-search');
+      const grid  = document.getElementById('npc-grid');
+      const count = document.getElementById('npc-count');
+      const empty = document.getElementById('npc-empty');
+      if (!input || !grid || !count) return;
+
+      const cards = Array.from(grid.querySelectorAll('.npc-card'));
+      const total = cards.length;
+
+      input.addEventListener('focus', () => input.style.borderColor = '#c9a227');
+      input.addEventListener('blur',  () => input.style.borderColor = '#3d2e18');
+
+      function run() {
+        const q = input.value.trim().toLowerCase();
+        let shown = 0;
+        cards.forEach(card => {
+          const match = !q || (card.dataset.search || '').includes(q);
+          card.style.display = match ? '' : 'none';
+          if (match) shown++;
+        });
+        if (empty) empty.hidden = shown !== 0;
+        count.textContent = q
+          ? shown + ' of ' + total + ' found'
+          : total + ' of note';
+      }
+
+      input.addEventListener('input', run);
+    })();
+  </script>
+
+</Layout>
+
+<style>
+  .npc-card:hover {
+    transform: translateY(-4px);
+  }
+  @media (max-width: 640px) {
+    .header-deco-img { display: none; }
+    #npc-count { margin-left: 0 !important; width: 100%; text-align: center; }
+  }
+</style>

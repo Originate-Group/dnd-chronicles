@@ -10,13 +10,37 @@ const { title, description = "Chronicles of the Motley Marauders — a D&D campa
 const currentPath = Astro.url.pathname;
 const ogImage = `${Astro.site}great-protector.jpg`;
 
-const navLinks = [
+interface NavLink {
+  href: string;
+  label: string;
+  children?: { href: string; label: string }[];
+}
+
+const navLinks: NavLink[] = [
   { href: '/', label: 'Home' },
-  { href: '/characters', label: 'The Party' },
-  { href: '/story', label: 'Story Updates' },
-  { href: '/journey', label: 'The Journey' },
-  { href: '/inventory', label: 'Bag of Holding' },
+  {
+    href: '/story',
+    label: 'Campaign',
+    children: [
+      { href: '/characters', label: 'The Party' },
+      { href: '/inventory', label: 'Bag of Holding' },
+      { href: '/story', label: 'Story Updates' },
+      { href: '/journey', label: 'The Journey' },
+      { href: '/#realm-map', label: 'The Realm Map' },
+      { href: '/npcs', label: 'Faces of the Realm' },
+    ],
+  },
   { href: '/quotes', label: 'Quotes' },
+  {
+    href: '/forgotten-tomes',
+    label: 'The Forgotten Tomes',
+    children: [
+      { href: '/forgotten-tomes/battle-royale', label: 'Battle Royale' },
+      { href: '/forgotten-tomes/the-heist', label: 'The Heist' },
+      { href: '/forgotten-tomes/healers-grief', label: "The Healer's Grief" },
+      { href: '/forgotten-tomes/cobalt-trials', label: 'The Cobalt Trials' },
+    ],
+  },
 ];
 ---
 
@@ -63,12 +87,34 @@ const navLinks = [
         <!-- Nav -->
         <nav class="hidden md:flex items-center gap-6">
           {navLinks.map(link => (
-            <a
-              href={link.href}
-              class={`nav-link ${currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href)) ? 'active' : ''}`}
-            >
-              {link.label}
-            </a>
+            link.children ? (
+              <div class="nav-dropdown-wrap">
+                <a
+                  href={link.href}
+                  class={`nav-link nav-dropdown-trigger ${currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href)) ? 'active' : ''}`}
+                >
+                  {link.label}
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style="margin-left:0.3rem; opacity:0.6; transition:transform 0.2s;"><path d="M1 3l4 4 4-4"/></svg>
+                </a>
+                <div class="nav-dropdown">
+                  {link.children.map(child => (
+                    <a
+                      href={child.href}
+                      class={`nav-dropdown-item ${currentPath === child.href ? 'active' : ''}`}
+                    >
+                      {child.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <a
+                href={link.href}
+                class={`nav-link ${currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href)) ? 'active' : ''}`}
+              >
+                {link.label}
+              </a>
+            )
           ))}
         </nav>
 
@@ -95,9 +141,10 @@ const navLinks = [
       background: rgba(10,7,4,0.97);
       backdrop-filter: blur(12px);
       flex-direction: column;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       gap: 0;
+      padding: 0 2.25rem;
     ">
       <!-- Decorative top/bottom borders -->
       <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(to right, transparent, #c9a227, transparent);"></div>
@@ -112,14 +159,47 @@ const navLinks = [
 
       <div style="font-family:'Cinzel Decorative',serif; color:#c9a227; font-size:0.65rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:3rem;">Navigate</div>
 
-      <nav style="display:flex; flex-direction:column; align-items:center; gap:2rem;">
+      <nav style="display:flex; flex-direction:column; align-items:flex-start; gap:1.5rem; width:100%; max-width:360px;">
         {navLinks.map(link => (
-          <a
-            href={link.href}
-            style={`font-family:'Cinzel',serif; font-size:1.6rem; font-weight:700; letter-spacing:0.08em; text-decoration:none; transition:color 0.2s, text-shadow 0.2s; ${currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href)) ? 'color:#f0c040; text-shadow:0 0 20px rgba(201,162,39,0.4);' : 'color:#c9a96e;'}`}
-          >
-            {link.label}
-          </a>
+          link.children ? (
+            <div class="mobile-nav-group" data-active={(link.href !== '/' && currentPath.startsWith(link.href)) ? 'true' : 'false'} style="width:100%;">
+              <div style="display:flex; align-items:center; justify-content:flex-start; gap:0.15rem;">
+                <a
+                  href={link.href}
+                  style={`font-family:'Cinzel',serif; font-size:1.4rem; font-weight:700; letter-spacing:0.08em; text-decoration:none; transition:color 0.2s; ${currentPath.startsWith(link.href) ? 'color:#f0c040;' : 'color:#c9a96e;'}`}
+                >
+                  {link.label}
+                </a>
+                <button
+                  class="mobile-submenu-toggle"
+                  aria-expanded="false"
+                  aria-label={`Toggle ${link.label} submenu`}
+                  style="background:none; border:none; color:#c9a96e; cursor:pointer; padding:0.4rem; line-height:0; flex-shrink:0;"
+                >
+                  <svg class="mobile-submenu-chev" width="16" height="16" viewBox="0 0 10 10" fill="currentColor" style="transition:transform 0.25s ease;"><path d="M1 3l4 4 4-4"/></svg>
+                </button>
+              </div>
+              <div class="mobile-submenu" style="max-height:0; overflow:hidden; transition:max-height 0.3s ease;">
+                <div style="display:flex; flex-direction:column; align-items:flex-start; gap:0.85rem; border-top:1px solid #3d2e18; padding:0.9rem 0 0.25rem 1rem; margin-top:0.65rem;">
+                  {link.children.map(child => (
+                    <a
+                      href={child.href}
+                      style={`font-family:'Cinzel',serif; font-size:1rem; letter-spacing:0.08em; text-align:left; text-decoration:none; transition:color 0.2s; ${currentPath === child.href ? 'color:#f0c040;' : 'color:#9a8060;'}`}
+                    >
+                      {child.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <a
+              href={link.href}
+              style={`font-family:'Cinzel',serif; font-size:1.4rem; font-weight:700; letter-spacing:0.08em; text-decoration:none; transition:color 0.2s, text-shadow 0.2s; ${currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href)) ? 'color:#f0c040; text-shadow:0 0 20px rgba(201,162,39,0.4);' : 'color:#c9a96e;'}`}
+            >
+              {link.label}
+            </a>
+          )
         ))}
       </nav>
 
@@ -191,6 +271,14 @@ const navLinks = [
           iconOpen.style.display  = 'none';
           iconClose.style.display = 'block';
           document.body.style.overflow = 'hidden';
+          // Recompute heights now that the overlay is visible
+          nav.querySelectorAll('.mobile-nav-group').forEach(group => {
+            const submenu = group.querySelector('.mobile-submenu');
+            const toggle  = group.querySelector('.mobile-submenu-toggle');
+            if (submenu && toggle && toggle.getAttribute('aria-expanded') === 'true') {
+              submenu.style.maxHeight = submenu.scrollHeight + 'px';
+            }
+          });
         }
         function closeMenu() {
           nav.style.display = 'none';
@@ -210,6 +298,28 @@ const navLinks = [
         // Close button inside overlay
         const closeBtn = document.getElementById('mobile-nav-close');
         if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+
+        // Submenu accordions
+        function setOpen(group, open) {
+          const submenu = group.querySelector('.mobile-submenu');
+          const toggle  = group.querySelector('.mobile-submenu-toggle');
+          const chev    = group.querySelector('.mobile-submenu-chev');
+          if (!submenu || !toggle) return;
+          submenu.style.maxHeight = open ? submenu.scrollHeight + 'px' : '0px';
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+          if (chev) chev.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        nav.querySelectorAll('.mobile-nav-group').forEach(group => {
+          const toggle = group.querySelector('.mobile-submenu-toggle');
+          if (!toggle) return;
+          toggle.addEventListener('click', () => {
+            const open = toggle.getAttribute('aria-expanded') === 'true';
+            setOpen(group, !open);
+          });
+          // Expand the group for the page you're currently on
+          if (group.dataset.active === 'true') setOpen(group, true);
+        });
       })();
 
       (function () {
@@ -255,7 +365,7 @@ const navLinks = [
       (function () {
         document.querySelectorAll('.map-zoom-wrap').forEach(wrap => {
           const img = wrap.querySelector('.map-zoom-img');
-          const MIN = 1, MAX = 4, STEP = 0.4;
+          const MIN = 1, MAX = 8, STEP = 0.5;
           let scale = 1, ox = 0, oy = 0;
 
           function clamp(val, lo, hi) { return Math.max(lo, Math.min(hi, val)); }
@@ -329,15 +439,18 @@ const navLinks = [
 
           // Touch pinch + drag
           let lastDist = null, lastTx, lastTy, lastTOx, lastTOy;
+          function anchorPan(t) {
+            lastTx = t.clientX; lastTy = t.clientY;
+            lastTOx = ox; lastTOy = oy;
+          }
           wrap.addEventListener('touchstart', e => {
             if (e.touches.length === 2) {
               lastDist = Math.hypot(
                 e.touches[0].clientX - e.touches[1].clientX,
                 e.touches[0].clientY - e.touches[1].clientY
               );
-            } else if (e.touches.length === 1 && scale > 1) {
-              lastTx = e.touches[0].clientX; lastTy = e.touches[0].clientY;
-              lastTOx = ox; lastTOy = oy;
+            } else if (e.touches.length === 1) {
+              anchorPan(e.touches[0]);
             }
           }, { passive: true });
           wrap.addEventListener('touchmove', e => {
@@ -359,7 +472,11 @@ const navLinks = [
               clampPan(); apply(false);
             }
           }, { passive: false });
-          wrap.addEventListener('touchend', () => { lastDist = null; });
+          wrap.addEventListener('touchend', e => {
+            lastDist = null;
+            // Re-anchor the remaining finger after a pinch ends so panning is seamless
+            if (e.touches.length === 1) anchorPan(e.touches[0]);
+          }, { passive: true });
         });
       })();
     </script>

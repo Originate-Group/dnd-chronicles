@@ -133,6 +133,60 @@ h1, h2, h3, h4, h5, h6 {
 .nav-link.active { color: #c9a227; }
 .nav-link.active::after { width: 100%; }
 
+/* Dropdown nav */
+.nav-dropdown-wrap {
+  position: relative;
+}
+.nav-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.nav-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10,7,4,0.97);
+  border: 1px solid #3d2e18;
+  border-top: 2px solid #c9a227;
+  padding: 0.5rem 0;
+  padding-top: 0.75rem;
+  min-width: 13rem;
+  z-index: 200;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+  /* bridge the gap so hover doesn't break */
+  margin-top: 0;
+}
+.nav-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 0;
+  right: 0;
+  height: 8px;
+}
+.nav-dropdown-wrap:hover .nav-dropdown {
+  display: block;
+}
+.nav-dropdown-item {
+  display: block;
+  padding: 0.55rem 1.25rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: #c9a96e;
+  text-decoration: none;
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+.nav-dropdown-item:hover,
+.nav-dropdown-item.active {
+  color: #f0c040;
+  background: rgba(201,162,39,0.07);
+}
+
 /* Site-wide secondary button style */
 .site-btn {
   display: inline-flex;

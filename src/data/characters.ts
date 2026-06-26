@@ -53,6 +53,7 @@ export const characters: Character[] = [
     hp: 84,
     maxHp: 84,
     ac: 21,
+    darkvision: 30,
     passivePerception: 15,
     passiveInvestigation: 12,
     passiveInsight: 12,

@@ -1,0 +1,209 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { oneShots } from '../../data/oneshots';
+
+const shot = oneShots.find(s => s.slug === 'healers-grief')!;
+
+interface PC {
+  name: string;
+  race: string;
+  class: string;
+  level: number;
+  image?: string;
+}
+
+const pcs: PC[] = [];
+---
+
+<Layout title={shot.title} description={shot.tagline}>
+
+  <div style="padding:5rem 1rem 3rem; text-align:center; border-bottom:1px solid #3d2e18; position:relative; overflow:hidden;">
+    <p style="font-family:'Cinzel',serif; color:#c9a227; font-size:0.75rem; letter-spacing:0.4em; text-transform:uppercase; margin-bottom:1rem; position:relative; z-index:1;">
+      <a href="/forgotten-tomes" style="color:#6b5a3e; text-decoration:none;">The Forgotten Tomes</a>
+      <span style="margin:0 0.5rem; color:#3d2e18;">›</span>One-Shot
+    </p>
+    <h1 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:clamp(2rem,5vw,3.5rem); font-weight:700; position:relative; z-index:1;" class="text-glow-gold">{shot.title}</h1>
+    <div class="rune-divider" style="max-width:16rem; margin:1.5rem auto 0; position:relative; z-index:1;"></div>
+    <p style="color:#c9a96e; font-style:italic; margin-top:1rem; position:relative; z-index:1;">{shot.tagline}</p>
+  </div>
+
+  <div style="max-width:72rem; margin:0 auto; padding:4rem 1rem;">
+
+    <!-- Synopsis -->
+    <section class="reveal" style="margin-bottom:4rem;">
+      <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; border-bottom:1px solid #3d2e18; padding-bottom:1rem;">
+        <h2 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:1.3rem; font-weight:700;">Synopsis</h2>
+      </div>
+      <div class="parchment-card" style="padding:2rem 2.5rem;">
+        <p style="font-family:'IM Fell English',serif; color:#c9a96e; font-size:1rem; line-height:1.8; font-style:italic;">{shot.synopsis}</p>
+      </div>
+    </section>
+
+    <!-- Character Carousel -->
+    <section class="reveal" style="margin-bottom:4rem;">
+      <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; border-bottom:1px solid #3d2e18; padding-bottom:1rem;">
+        <h2 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:1.3rem; font-weight:700; flex:1;">The Party</h2>
+        <span style="font-family:'Cinzel',serif; font-size:0.75rem; color:#6b5a3e;">{pcs.length > 0 ? `${pcs.length} characters` : 'TBD'}</span>
+      </div>
+
+      {pcs.length > 0 ? (
+        <div class="os-carousel-outer">
+          <button class="os-carousel-btn" id="os-prev" aria-label="Previous">&#8249;</button>
+          <div class="os-carousel-mask">
+            <div class="os-carousel-viewport" id="os-viewport">
+              <div class="os-carousel-track" id="os-track">
+                {pcs.map(char => (
+                  <div class="os-card parchment-card">
+                    {char.image && (
+                      <div style="width:100%; height:9rem; overflow:hidden; margin-bottom:0.75rem; border-bottom:1px solid #2a1e0e;">
+                        <img src={char.image} alt={char.name} style="width:100%; height:100%; object-fit:cover; object-position:top;" loading="lazy" />
+                      </div>
+                    )}
+                    <h3 style="font-family:'Cinzel',serif; color:#f0c040; font-size:0.8rem; font-weight:700; margin-bottom:0.2rem; text-align:center; padding:0 1rem;">{char.name}</h3>
+                    <p style="font-family:'Cinzel',serif; font-size:0.65rem; color:#c9a227; text-align:center; margin-bottom:0.3rem; padding:0 1rem;">{char.class}</p>
+                    <p style="font-size:0.7rem; color:#9a8060; text-align:center; margin-bottom:1rem; padding:0 1rem;">{char.race}</p>
+                    <div style="text-align:center; margin-top:auto; padding:0 1rem 1rem;">
+                      <span style="font-family:'Cinzel',serif; font-size:0.65rem; color:#6b5a3e; border:1px solid #3d2e18; padding:0.1rem 0.5rem; border-radius:9999px;">Lv {char.level}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <button class="os-carousel-btn" id="os-next" aria-label="Next">&#8250;</button>
+        </div>
+      ) : (
+        <div class="parchment-card" style="padding:2rem; text-align:center;">
+          <p style="font-family:'IM Fell English',serif; color:#6b5a3e; font-style:italic;">Characters to be announced.</p>
+        </div>
+      )}
+    </section>
+
+    <!-- NPC Cards -->
+    <section class="reveal" style="margin-bottom:4rem;">
+      <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; border-bottom:1px solid #3d2e18; padding-bottom:1rem;">
+        <h2 style="font-family:'Cinzel Decorative',serif; color:#f0c040; font-size:1.3rem; font-weight:700;">Notable Characters</h2>
+      </div>
+      {shot.npcs.length > 0 ? (
+        <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr)); gap:1rem;">
+          {shot.npcs.map(npc => (
+            <div class="parchment-card" style={`padding:1.25rem; ${npc.isHostile ? 'border-top:2px solid #8b0000;' : 'border-top:2px solid #3d2e18;'}`}>
+              {npc.image && (
+                <div style="width:100%; height:8rem; overflow:hidden; margin-bottom:0.75rem;">
+                  <img src={npc.image} alt={npc.name} style="width:100%; height:100%; object-fit:cover; object-position:top;" loading="lazy" />
+                </div>
+              )}
+              <h3 style="font-family:'Cinzel',serif; color:#e8d5b0; font-size:0.85rem; font-weight:700; margin-bottom:0.2rem;">{npc.name}</h3>
+              <p style="font-family:'Cinzel',serif; font-size:0.65rem; color:#c9a227; margin-bottom:0.6rem;">{npc.role}</p>
+              <p style="font-size:0.8rem; color:#9a8060; line-height:1.5;">{npc.description}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="parchment-card" style="padding:2rem; text-align:center;">
+          <p style="font-family:'IM Fell English',serif; color:#6b5a3e; font-style:italic;">No NPCs recorded yet.</p>
+        </div>
+      )}
+    </section>
+
+  </div>
+</Layout>
+
+<style>
+.os-carousel-outer { display:flex; align-items:center; gap:1rem; }
+.os-carousel-mask {
+  overflow:hidden; flex:1;
+  -webkit-mask-image:linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+  mask-image:linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+}
+.os-carousel-viewport { overflow:hidden; cursor:grab; user-select:none; -webkit-user-select:none; }
+.os-carousel-track { display:flex; gap:12px; padding:0.75rem 0.5rem; width:max-content; will-change:transform; }
+.os-card {
+  width:clamp(140px,16vw,190px); flex-shrink:0;
+  display:flex; flex-direction:column; overflow:hidden;
+  transition:border-color 0.2s, transform 0.2s; padding:0;
+}
+.os-card:hover { border-color:#c9a227; transform:translateY(-4px); }
+.os-carousel-btn {
+  flex-shrink:0; width:2.5rem; height:2.5rem; border-radius:50%;
+  background:rgba(26,18,8,0.9); border:1px solid #3d2e18;
+  color:#c9a227; font-size:1.5rem; line-height:1;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:border-color 0.2s, color 0.2s;
+}
+.os-carousel-btn:hover { border-color:#c9a227; color:#f0c040; }
+@media (max-width:640px) {
+  .os-card { width:calc(100vw - 9rem); }
+  .os-carousel-mask {
+    -webkit-mask-image:linear-gradient(to right, transparent 0%, black 4%, black 100%);
+    mask-image:linear-gradient(to right, transparent 0%, black 4%, black 100%);
+  }
+}
+</style>
+
+<script is:inline>
+(function () {
+  function initCarousel(viewportId, prevId, nextId) {
+    const viewport = document.getElementById(viewportId);
+    const prev = document.getElementById(prevId);
+    const next = document.getElementById(nextId);
+    if (!viewport || !prev || !next) return;
+    const track = viewport.querySelector('.os-carousel-track');
+    if (!track) return;
+    const originals = Array.from(track.querySelectorAll('.os-card'));
+    const n = originals.length;
+    if (n === 0) return;
+    const makeSet = () => {
+      const frag = document.createDocumentFragment();
+      originals.forEach(card => { const c = card.cloneNode(true); c.setAttribute('aria-hidden','true'); frag.appendChild(c); });
+      return frag;
+    };
+    track.appendChild(makeSet());
+    track.insertBefore(makeSet(), track.firstChild);
+    const GAP = 12;
+    const CARD_W = () => (track.children[0]?.offsetWidth ?? 190) + GAP;
+    const setW = () => n * CARD_W();
+    let offset = setW();
+    const setTransform = (px, animated) => {
+      track.style.transition = animated ? 'transform 0.42s cubic-bezier(0.25,0.46,0.45,0.94)' : 'none';
+      track.style.transform = `translateX(${-px}px)`;
+      offset = px;
+    };
+    setTransform(offset, false);
+    const normalise = () => {
+      const s = setW(); let o = offset;
+      while (o >= 2 * s) o -= s;
+      while (o < s) o += s;
+      if (o !== offset) setTransform(o, false);
+    };
+    let busy = false;
+    const step = (dir) => {
+      if (busy) return; busy = true;
+      setTransform(offset + dir * CARD_W(), true);
+      track.addEventListener('transitionend', function onEnd() {
+        track.removeEventListener('transitionend', onEnd); normalise(); busy = false;
+      }, { once: true });
+    };
+    prev.addEventListener('click', () => step(-1));
+    next.addEventListener('click', () => step(1));
+    let dragStartX = null, dragStartOff = 0;
+    const onDragStart = (x) => { dragStartX = x; dragStartOff = offset; track.style.transition = 'none'; };
+    const onDragMove = (x) => { if (dragStartX === null) return; offset = dragStartOff + (dragStartX - x); track.style.transform = `translateX(${-offset}px)`; };
+    const onDragEnd = () => {
+      if (dragStartX === null) return; dragStartX = null;
+      const snapped = Math.round(offset / CARD_W()) * CARD_W();
+      setTransform(snapped, true);
+      track.addEventListener('transitionend', function onEnd() {
+        track.removeEventListener('transitionend', onEnd); normalise(); busy = false;
+      }, { once: true });
+    };
+    viewport.addEventListener('mousedown', e => onDragStart(e.clientX));
+    window.addEventListener('mousemove', e => onDragMove(e.clientX));
+    window.addEventListener('mouseup', onDragEnd);
+    viewport.addEventListener('touchstart', e => onDragStart(e.touches[0].clientX), { passive: true });
+    viewport.addEventListener('touchmove', e => onDragMove(e.touches[0].clientX), { passive: true });
+    viewport.addEventListener('touchend', onDragEnd);
+  }
+  initCarousel('os-viewport', 'os-prev', 'os-next');
+})();
+</script>
